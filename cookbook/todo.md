@@ -107,11 +107,11 @@
 
 - [ ] Replace `ShotStore.seeded` test setup with a GetX test binding or injectable `ShotController`.
 - [ ] Ensure each widget test calls `Get.reset()` in teardown to avoid leaked controllers.
-- [ ] Update widget smoke test to pump `ShotApp` with test controller injection.
+- [x] Update widget smoke test to pump `ShotApp` with test controller injection.
 - [ ] Update workflow tests for `Obx` rebuilds and GetX navigation.
 - [ ] Keep SQLite acceptance tests using temporary FFI database.
 - [ ] Run `flutter test --concurrency=1`.
-- [ ] Commit and push 7.4a: migrate widget test harness and controller injection.
+- [x] Commit and push 7.4a: migrate widget test harness and controller injection.
 - [ ] Commit and push 7.4b: migrate workflow and SQLite acceptance tests.
 - [ ] Commit and push 7.4c: full sequential test validation fixes.
 
