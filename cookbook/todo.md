@@ -86,12 +86,12 @@
 
 ### Batch 8.3 - Screen-Level Polish
 
-- [ ] Upgrade the shell navigation to feel like a modern app surface instead of default Material navigation.
+- [x] Upgrade the shell navigation to feel like a modern app surface instead of default Material navigation.
 - [ ] Polish Home, Beans, History, Shot Detail, and forms with consistent spacing and component hierarchy.
 - [ ] Replace obvious Material-only buttons with Shad buttons where it improves the UI without breaking tests.
 - [ ] Run `flutter analyze`.
 - [ ] Run `flutter test --concurrency=1`.
-- [ ] Commit and push 8.3a: shell and page layout polish.
+- [x] Commit and push 8.3a: shell and page layout polish.
 - [ ] Commit and push 8.3b: form/action polish and validation.
 
 ## Task 7 - GetX State Management Migration Plan
