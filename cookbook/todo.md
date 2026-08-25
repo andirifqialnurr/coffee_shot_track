@@ -85,10 +85,10 @@
 - [x] Preserve current public actions: `load`, `refresh`, `addBean`, `saveBean`, `markBeanFinished`, `deleteBeanOrArchive`, `addShot`, `saveShot`, `deleteShot`, and `toggleFavorite`.
 - [x] Preserve derived getters: active beans, recent shots, last shot, total shots, average rating, most-used bean, active/recent bean, shots by bean, best shot by bean.
 - [x] Keep SQLite persistence in `ShotDatabase`; do not replace persistence with GetX.
-- [ ] Run focused store/controller acceptance tests.
+- [x] Run focused store/controller acceptance tests.
 - [x] Commit and push 7.2a: introduce GetX controller state and lifecycle.
 - [x] Commit and push 7.2b: migrate mutations and derived getters.
-- [ ] Commit and push 7.2c: focused controller acceptance tests.
+- [x] Commit and push 7.2c: focused controller acceptance tests.
 
 ### Batch 7.3 - Remove InheritedNotifier Scope From UI
 
