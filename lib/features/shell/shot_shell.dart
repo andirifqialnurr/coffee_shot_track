@@ -27,7 +27,7 @@ class _ShotShellState extends State<ShotShell> {
     ];
 
     return Scaffold(
-      body: IndexedStack(index: _index, children: pages),
+      body: SizedBox.expand(child: pages[_index]),
       bottomNavigationBar: _ShotNavBar(
         selectedIndex: _index,
         onSelected: (value) => setState(() => _index = value),

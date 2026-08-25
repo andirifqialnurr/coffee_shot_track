@@ -127,6 +127,16 @@
 - [x] Verify `HEAD` matches `origin/main` after final push.
 - [x] Commit and push 9.3: final validation evidence.
 
+## Task 10 - Visible Body Bugfix
+
+- [x] Replace nested `GetMaterialApp`/Shad builder wiring with `ShadApp` as the root UI app.
+- [x] Register `ShotController` in GetX before loading data so `Get.find` and `Obx` remain the state layer.
+- [x] Render only the active shell tab instead of keeping all tab pages in a stack.
+- [x] Keep the shell body expanded so page content receives real viewport constraints.
+- [x] Run `flutter analyze`.
+- [x] Run `flutter test --concurrency=1`.
+- [x] Commit and push the visible body fix.
+
 ## Task 7 - GetX State Management Migration Plan
 
 ### Commit Policy for Task 7

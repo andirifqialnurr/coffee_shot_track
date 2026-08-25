@@ -13,9 +13,9 @@ void main() {
     expect(find.text('Shot', skipOffstage: false), findsOneWidget);
     expect(find.text('No beans yet', skipOffstage: false), findsOneWidget);
     expect(find.text('Home', skipOffstage: false), findsOneWidget);
-    expect(find.text('Beans', skipOffstage: false), findsWidgets);
+    expect(find.text('Beans', skipOffstage: false), findsOneWidget);
     expect(find.text('New Shot', skipOffstage: false), findsWidgets);
-    expect(find.text('History', skipOffstage: false), findsWidgets);
+    expect(find.text('History', skipOffstage: false), findsOneWidget);
   });
 }
 

@@ -24,6 +24,9 @@ class _ShotAppState extends State<ShotApp> {
   @override
   void initState() {
     super.initState();
+    if (!Get.isRegistered<ShotController>()) {
+      ShotBinding(controller: _controller).dependencies();
+    }
     _controller.load();
   }
 
@@ -37,25 +40,20 @@ class _ShotAppState extends State<ShotApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ShadApp.custom(
+    return ShadApp(
+      title: 'Shot',
+      debugShowCheckedModeBanner: false,
       theme: ShotTheme.shadLight(),
       darkTheme: ShotTheme.shadDark(),
       themeMode: ThemeMode.system,
-      appBuilder: (context) => GetMaterialApp(
-        title: 'Shot',
-        debugShowCheckedModeBanner: false,
-        theme: ShotTheme.light(),
-        darkTheme: ShotTheme.dark(),
-        themeMode: ThemeMode.system,
-        initialBinding: ShotBinding(controller: _controller),
-        home: const ShotShell(),
-        localizationsDelegates: const [
-          GlobalShadLocalizations.delegate,
-        ],
-        builder: (context, child) => ShadAppBuilder(
-          child: child ?? const SizedBox.shrink(),
-        ),
-      ),
+      home: const ShotShell(),
+      materialThemeBuilder: (context, theme) {
+        final isDark = theme.brightness == Brightness.dark;
+        return isDark ? ShotTheme.dark() : ShotTheme.light();
+      },
+      localizationsDelegates: const [
+        GlobalShadLocalizations.delegate,
+      ],
     );
   }
 }

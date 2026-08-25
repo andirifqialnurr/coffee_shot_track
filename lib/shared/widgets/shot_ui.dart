@@ -27,15 +27,16 @@ class ShotPage extends StatelessWidget {
     return SafeArea(
       child: DecoratedBox(
         decoration: BoxDecoration(color: shadTheme.colorScheme.background),
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 760),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 18, 16, 10),
-                    child: Row(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
+          children: [
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 760),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (Navigator.of(context).canPop()) ...[
@@ -79,18 +80,9 @@ class ShotPage extends StatelessWidget {
                         ...actions,
                       ],
                     ),
-                  ),
-                ),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              sliver: SliverToBoxAdapter(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 760),
-                    child: child,
-                  ),
+                    const SizedBox(height: 16),
+                    child,
+                  ],
                 ),
               ),
             ),

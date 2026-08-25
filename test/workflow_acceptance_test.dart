@@ -62,20 +62,15 @@ void main() {
 Widget _wrap(ShotController controller, Widget child) {
   Get.put<ShotController>(controller);
 
-  return ShadApp.custom(
+  return ShadApp(
     theme: ShotTheme.shadLight(),
     darkTheme: ShotTheme.shadDark(),
     themeMode: ThemeMode.light,
-    appBuilder: (context) => GetMaterialApp(
-      theme: ShotTheme.light(),
-      home: Scaffold(body: child),
-      localizationsDelegates: const [
-        GlobalShadLocalizations.delegate,
-      ],
-      builder: (context, child) => ShadAppBuilder(
-        child: child ?? const SizedBox.shrink(),
-      ),
-    ),
+    materialThemeBuilder: (context, theme) => ShotTheme.light(),
+    home: Scaffold(body: child),
+    localizationsDelegates: const [
+      GlobalShadLocalizations.delegate,
+    ],
   );
 }
 
