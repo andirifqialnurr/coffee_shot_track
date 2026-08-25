@@ -36,7 +36,7 @@ void main() {
   });
 
   test('beans and shots are read back after a store restart', () async {
-    final firstSession = ShotStore(database: database);
+    final firstSession = ShotController(database: database);
     await firstSession.load();
 
     final bean = await firstSession.addBean(
@@ -48,7 +48,7 @@ void main() {
       _shot(beanId: bean.id!, dose: 18, yieldOut: 42, rating: 5),
     );
 
-    final secondSession = ShotStore(database: database);
+    final secondSession = ShotController(database: database);
     await secondSession.load();
 
     expect(secondSession.beans.single.name, 'Ethiopia Bombe');
@@ -57,7 +57,7 @@ void main() {
   });
 
   test('brew again copy does not mutate the source shot', () async {
-    final store = ShotStore(database: database);
+    final store = ShotController(database: database);
     await store.load();
     final bean = await store.addBean(name: 'Colombia Pink Bourbon');
     final source = await store.addShot(
@@ -81,7 +81,7 @@ void main() {
   });
 
   test('bean with shots is archived instead of deleted', () async {
-    final store = ShotStore(database: database);
+    final store = ShotController(database: database);
     await store.load();
     final bean = await store.addBean(name: 'Brazil Cerrado');
     await store.addShot(_shot(beanId: bean.id!, dose: 19, yieldOut: 38));
@@ -93,7 +93,7 @@ void main() {
   });
 
   test('store rejects invalid bean and shot values', () async {
-    final store = ShotStore(database: database);
+    final store = ShotController(database: database);
     await store.load();
 
     await expectLater(

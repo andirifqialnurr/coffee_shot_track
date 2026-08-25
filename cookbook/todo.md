@@ -97,7 +97,7 @@
 - [x] Wrap reactive UI sections with `Obx` where beans/shots/loading/error changes need rebuilds.
 - [x] Keep form-local state such as selected bean, text controllers, rating selection, search query, and filters inside each widget unless it must be shared globally.
 - [x] Replace navigation that benefits from GetX with `Get.to`, `Get.back`, and `Get.snackbar` only where it reduces boilerplate; keep standard Flutter navigation if it is clearer.
-- [ ] Remove `lib/app/shot_scope.dart` after all usages are gone.
+- [x] Remove `lib/app/shot_scope.dart` after all usages are gone.
 - [x] Run `flutter analyze`.
 - [x] Commit and push 7.3a: migrate app/home/shell state reads to GetX.
 - [x] Commit and push 7.3b: migrate beans/history screens to GetX.
@@ -105,14 +105,14 @@
 
 ### Batch 7.4 - Test Harness Migration
 
-- [ ] Replace `ShotStore.seeded` test setup with a GetX test binding or injectable `ShotController`.
-- [ ] Ensure each widget test calls `Get.reset()` in teardown to avoid leaked controllers.
+- [x] Replace `ShotStore.seeded` test setup with a GetX test binding or injectable `ShotController`.
+- [x] Ensure each widget test calls `Get.reset()` in teardown to avoid leaked controllers.
 - [x] Update widget smoke test to pump `ShotApp` with test controller injection.
-- [ ] Update workflow tests for `Obx` rebuilds and GetX navigation.
-- [ ] Keep SQLite acceptance tests using temporary FFI database.
+- [x] Update workflow tests for `Obx` rebuilds and GetX navigation.
+- [x] Keep SQLite acceptance tests using temporary FFI database.
 - [ ] Run `flutter test --concurrency=1`.
 - [x] Commit and push 7.4a: migrate widget test harness and controller injection.
-- [ ] Commit and push 7.4b: migrate workflow and SQLite acceptance tests.
+- [x] Commit and push 7.4b: migrate workflow and SQLite acceptance tests.
 - [ ] Commit and push 7.4c: full sequential test validation fixes.
 
 ### Batch 7.5 - Final Cleanup and Documentation

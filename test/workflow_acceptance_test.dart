@@ -1,4 +1,3 @@
-import 'package:coffee_shot_track/app/shot_scope.dart';
 import 'package:coffee_shot_track/app/shot_theme.dart';
 import 'package:coffee_shot_track/data/shot_store.dart';
 import 'package:coffee_shot_track/domain/coffee_bean.dart';
@@ -7,15 +6,20 @@ import 'package:coffee_shot_track/features/history/history_page.dart';
 import 'package:coffee_shot_track/features/shots/shot_form_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 
 void main() {
+  tearDown(Get.reset);
+
   testWidgets('shot form updates ratio when dose and yield change', (
     tester,
   ) async {
-    final store = ShotStore.seeded(beans: [_bean(id: 1, name: 'Ethiopia Halo')]);
+    final controller = ShotController.seeded(
+      beans: [_bean(id: 1, name: 'Ethiopia Halo')],
+    );
 
     await tester.pumpWidget(
-      _wrap(store, const ShotFormPage(initialBeanId: 1)),
+      _wrap(controller, const ShotFormPage(initialBeanId: 1)),
     );
     await tester.pump();
 
@@ -27,7 +31,7 @@ void main() {
   });
 
   testWidgets('history filters shots by bean', (tester) async {
-    final store = ShotStore.seeded(
+    final controller = ShotController.seeded(
       beans: [
         _bean(id: 1, name: 'Kenya Nyeri'),
         _bean(id: 2, name: 'Brazil Cerrado'),
@@ -38,7 +42,7 @@ void main() {
       ],
     );
 
-    await tester.pumpWidget(_wrap(store, const HistoryPage()));
+    await tester.pumpWidget(_wrap(controller, const HistoryPage()));
     await tester.pump();
 
     expect(find.text('Kenya Nyeri'), findsOneWidget);
@@ -54,13 +58,12 @@ void main() {
   });
 }
 
-Widget _wrap(ShotStore store, Widget child) {
-  return ShotScope(
-    store: store,
-    child: MaterialApp(
-      theme: ShotTheme.light(),
-      home: Scaffold(body: child),
-    ),
+Widget _wrap(ShotController controller, Widget child) {
+  Get.put<ShotController>(controller);
+
+  return GetMaterialApp(
+    theme: ShotTheme.light(),
+    home: Scaffold(body: child),
   );
 }
 
