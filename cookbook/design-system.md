@@ -2,46 +2,51 @@
 
 ## Direction
 
-Shot uses a craft espresso identity: warm, precise, and compact. The app should look like a modern brewing notebook with clear numbers and calm surfaces. It must not look like the default Flutter counter app or a generic brown dashboard.
+Shot uses a precise espresso-notebook identity: neutral, compact, and instrument-like with one warm coffee accent. The app should feel like a modern mobile tool, not a default Flutter screen or a generic brown dashboard.
 
 ## Color Tokens
 
 ### Light
 
-- Background: `#F8F4EE`
-- Surface: `#FFFDF8`
-- Elevated surface: `#FFFFFF`
-- Primary espresso: `#5A3825`
-- Primary pressed: `#3B2418`
-- Caramel accent: `#C47A3A`
-- Mint success: `#5E8C6A`
-- Ink: `#201A16`
-- Muted text: `#766A60`
-- Border: `#E5D8C9`
+- Background: `#FAFAF9`
+- Foreground: `#18181B`
+- Card: `#FFFFFF`
+- Primary: `#27272A`
+- Secondary: `#F4F4F5`
+- Muted foreground: `#71717A`
+- Accent: `#FFF7ED`
+- Accent foreground: `#9A3412`
+- Ring/accent coffee: `#D97706`
+- Success: `#15803D`
+- Destructive: `#DC2626`
+- Border/input: `#E4E4E7`
 
 ### Dark
 
-- Background: `#161412`
-- Surface: `#211D19`
-- Elevated surface: `#2C251F`
-- Primary espresso: `#D5A16A`
-- Primary pressed: `#F0C28E`
-- Caramel accent: `#C98243`
-- Mint success: `#83B28C`
-- Ink: `#F8EEE3`
-- Muted text: `#BBAEA2`
-- Border: `#463A31`
+- Background: `#09090B`
+- Foreground: `#FAFAFA`
+- Card: `#18181B`
+- Primary: `#FAFAFA`
+- Secondary: `#27272A`
+- Muted foreground: `#A1A1AA`
+- Accent: `#431407`
+- Accent foreground: `#FED7AA`
+- Ring/accent coffee: `#F59E0B`
+- Success: `#4ADE80`
+- Destructive: `#F87171`
+- Border: `#27272A`
+- Input: `#3F3F46`
 
-Neutral surfaces must stay dominant. Brown/caramel is used for emphasis, not every container.
+Neutral zinc surfaces must stay dominant. Orange/coffee accent is used for focus rings, selected recipe details, and small emphasis only.
 
 ## Typography
 
-- Use system font stack for reliability and offline tests.
-- Hero recipe number: 28-36sp, semi-bold.
-- Screen title: 24-28sp, semi-bold.
-- Section title: 16-18sp, semi-bold.
-- Body: 14-16sp.
-- Metadata: 12-13sp.
+- Use Montserrat for Material and Shad typography.
+- Hero recipe number: 36sp, weight 800.
+- Screen title: 28sp, weight 800.
+- Section title: 16sp, weight 800.
+- Body: 14sp, weight 500.
+- Metadata: 12-13sp, weight 700 for labels and 500 for secondary text.
 - Letter spacing: 0.
 
 ## Components
@@ -61,7 +66,7 @@ Neutral surfaces must stay dominant. Brown/caramel is used for emphasis, not eve
 
 ### Buttons
 
-- Primary: filled espresso/caramel, 44dp minimum height.
+- Primary: filled neutral foreground/background pair, 44dp minimum height.
 - Secondary: outlined neutral.
 - Destructive: text or outlined red, never dominant unless confirming.
 - Icons should be used for common actions where Material icons exist.

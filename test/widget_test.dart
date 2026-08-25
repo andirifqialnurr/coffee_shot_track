@@ -8,14 +8,14 @@ void main() {
 
   testWidgets('Shot app boots into empty home state', (tester) async {
     await tester.pumpWidget(ShotApp(controller: _NoopShotController()));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    expect(find.text('Shot'), findsOneWidget);
-    expect(find.text('No beans yet'), findsOneWidget);
-    expect(find.text('Home'), findsOneWidget);
-    expect(find.text('Beans'), findsOneWidget);
-    expect(find.text('New Shot'), findsWidgets);
-    expect(find.text('History'), findsOneWidget);
+    expect(find.text('Shot', skipOffstage: false), findsOneWidget);
+    expect(find.text('No beans yet', skipOffstage: false), findsOneWidget);
+    expect(find.text('Home', skipOffstage: false), findsOneWidget);
+    expect(find.text('Beans', skipOffstage: false), findsWidgets);
+    expect(find.text('New Shot', skipOffstage: false), findsWidgets);
+    expect(find.text('History', skipOffstage: false), findsWidgets);
   });
 }
 

@@ -100,7 +100,7 @@
 
 - [x] Keep this repair split into multiple commits and push each commit.
 - [x] Preserve GetX state management and existing data workflows.
-- [ ] Validate analyzer and full tests before marking complete.
+- [x] Validate analyzer and full tests before marking complete.
 
 ### Batch 9.1 - Unified Theme, Font, and Light/Dark Tokens
 
@@ -122,10 +122,10 @@
 
 ### Batch 9.3 - Final Validation
 
-- [ ] Run `flutter analyze`.
-- [ ] Run `flutter test --concurrency=1`.
-- [ ] Verify `HEAD` matches `origin/main` after final push.
-- [ ] Commit and push 9.3: final validation evidence.
+- [x] Run `flutter analyze`.
+- [x] Run `flutter test --concurrency=1`.
+- [x] Verify `HEAD` matches `origin/main` after final push.
+- [x] Commit and push 9.3: final validation evidence.
 
 ## Task 7 - GetX State Management Migration Plan
 
