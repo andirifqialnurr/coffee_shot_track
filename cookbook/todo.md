@@ -57,6 +57,43 @@
 - Live ratio update and History bean filtering are covered by `test/workflow_acceptance_test.dart`.
 - Offline readiness is source-verified: app dependencies are local Flutter, `sqflite`, and `path`; no runtime network package or network image usage exists in `lib/`.
 
+## Task 8 - Shadcn UI Visual Upgrade
+
+### Commit Policy for Task 8
+
+- [x] Split Task 8 into several meaningful commits and push each commit before continuing.
+- [x] Keep GetX as the state management layer; shadcn is only for UI/theming.
+- [ ] Run `flutter analyze` and `flutter test --concurrency=1` after visual batches.
+
+### Batch 8.1 - Shadcn Foundation and Debug Banner
+
+- [x] Add `shadcn_ui` dependency.
+- [x] Wrap the GetX app with `ShadApp.custom` so Shad components receive `ShadTheme`.
+- [x] Keep `GetMaterialApp` and `ShotBinding` as the app bootstrap.
+- [x] Disable the Flutter debug banner.
+- [x] Run `flutter pub get`.
+- [x] Run `flutter analyze`.
+- [x] Commit and push 8.1: dependency, Shad theme provider, and debug banner fix.
+
+### Batch 8.2 - Shared Component Reskin
+
+- [ ] Replace shared cards, badges, empty states, metric tiles, and shot list rows with shadcn-styled primitives.
+- [ ] Use tighter borders, neutral surfaces, clear focus/hover affordances, and icon-first controls.
+- [ ] Keep text readable and stable across narrow screens.
+- [ ] Run focused widget tests.
+- [ ] Commit and push 8.2a: shared surface and badge reskin.
+- [ ] Commit and push 8.2b: list rows, metric tiles, and empty states.
+
+### Batch 8.3 - Screen-Level Polish
+
+- [ ] Upgrade the shell navigation to feel like a modern app surface instead of default Material navigation.
+- [ ] Polish Home, Beans, History, Shot Detail, and forms with consistent spacing and component hierarchy.
+- [ ] Replace obvious Material-only buttons with Shad buttons where it improves the UI without breaking tests.
+- [ ] Run `flutter analyze`.
+- [ ] Run `flutter test --concurrency=1`.
+- [ ] Commit and push 8.3a: shell and page layout polish.
+- [ ] Commit and push 8.3b: form/action polish and validation.
+
 ## Task 7 - GetX State Management Migration Plan
 
 ### Commit Policy for Task 7

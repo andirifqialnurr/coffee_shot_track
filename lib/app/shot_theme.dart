@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart' as shad;
 
 class ShotColors extends ThemeExtension<ShotColors> {
   const ShotColors({
@@ -43,6 +44,52 @@ class ShotColors extends ThemeExtension<ShotColors> {
 }
 
 class ShotTheme {
+  static shad.ShadThemeData shadLight() {
+    return shad.ShadThemeData(
+      brightness: Brightness.light,
+      colorScheme: const shad.ShadZincColorScheme.light(
+        background: Color(0xFFFAFAFA),
+        foreground: Color(0xFF18181B),
+        card: Color(0xFFFFFFFF),
+        primary: Color(0xFF1F2937),
+        primaryForeground: Color(0xFFFFFFFF),
+        secondary: Color(0xFFF4F4F5),
+        secondaryForeground: Color(0xFF18181B),
+        muted: Color(0xFFF4F4F5),
+        mutedForeground: Color(0xFF71717A),
+        accent: Color(0xFFEFF6FF),
+        accentForeground: Color(0xFF1E3A8A),
+        border: Color(0xFFE4E4E7),
+        input: Color(0xFFE4E4E7),
+        ring: Color(0xFFC47A3A),
+      ),
+      radius: BorderRadius.all(Radius.circular(8)),
+    );
+  }
+
+  static shad.ShadThemeData shadDark() {
+    return shad.ShadThemeData(
+      brightness: Brightness.dark,
+      colorScheme: const shad.ShadZincColorScheme.dark(
+        background: Color(0xFF09090B),
+        foreground: Color(0xFFFAFAFA),
+        card: Color(0xFF18181B),
+        primary: Color(0xFFFAFAFA),
+        primaryForeground: Color(0xFF18181B),
+        secondary: Color(0xFF27272A),
+        secondaryForeground: Color(0xFFFAFAFA),
+        muted: Color(0xFF27272A),
+        mutedForeground: Color(0xFFA1A1AA),
+        accent: Color(0xFF172554),
+        accentForeground: Color(0xFFDBEAFE),
+        border: Color(0xFF27272A),
+        input: Color(0xFF27272A),
+        ring: Color(0xFFD5A16A),
+      ),
+      radius: BorderRadius.all(Radius.circular(8)),
+    );
+  }
+
   static ThemeData light() {
     return _build(
       brightness: Brightness.light,

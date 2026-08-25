@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../data/shot_store.dart';
 import '../features/shell/shot_shell.dart';
@@ -36,13 +37,25 @@ class _ShotAppState extends State<ShotApp> {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Shot',
-      theme: ShotTheme.light(),
-      darkTheme: ShotTheme.dark(),
+    return ShadApp.custom(
+      theme: ShotTheme.shadLight(),
+      darkTheme: ShotTheme.shadDark(),
       themeMode: ThemeMode.system,
-      initialBinding: ShotBinding(controller: _controller),
-      home: const ShotShell(),
+      appBuilder: (context) => GetMaterialApp(
+        title: 'Shot',
+        debugShowCheckedModeBanner: false,
+        theme: ShotTheme.light(),
+        darkTheme: ShotTheme.dark(),
+        themeMode: ThemeMode.system,
+        initialBinding: ShotBinding(controller: _controller),
+        home: const ShotShell(),
+        localizationsDelegates: const [
+          GlobalShadLocalizations.delegate,
+        ],
+        builder: (context, child) => ShadAppBuilder(
+          child: child ?? const SizedBox.shrink(),
+        ),
+      ),
     );
   }
 }
