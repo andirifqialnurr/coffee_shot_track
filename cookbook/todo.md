@@ -59,6 +59,13 @@
 
 ## Task 7 - GetX State Management Migration Plan
 
+### Commit Policy for Task 7
+
+- [ ] Every Batch 7.x must be split into at least 2 meaningful commits when it contains more than 3 implementation checklist items.
+- [ ] Each sub-batch commit must be pushed before continuing to the next sub-batch.
+- [ ] Validation-only or documentation-only sub-batches may be one commit if they do not include behavior changes.
+- [ ] Commit messages must describe the sub-batch scope, not only the parent batch number.
+
 ### Batch 7.1 - Dependency and App Bootstrap
 
 - [ ] Add `get` dependency to `pubspec.yaml`.
@@ -67,7 +74,8 @@
 - [ ] Keep `WidgetsFlutterBinding.ensureInitialized()` in `main.dart`.
 - [ ] Run `flutter pub get`.
 - [ ] Run `flutter analyze`.
-- [ ] Commit and push Batch 7.1.
+- [ ] Commit and push 7.1a: dependency and `GetMaterialApp` bootstrap.
+- [ ] Commit and push 7.1b: app binding registration and bootstrap validation.
 
 ### Batch 7.2 - Controller Boundary
 
@@ -78,7 +86,9 @@
 - [ ] Preserve derived getters: active beans, recent shots, last shot, total shots, average rating, most-used bean, active/recent bean, shots by bean, best shot by bean.
 - [ ] Keep SQLite persistence in `ShotDatabase`; do not replace persistence with GetX.
 - [ ] Run focused store/controller acceptance tests.
-- [ ] Commit and push Batch 7.2.
+- [ ] Commit and push 7.2a: introduce GetX controller state and lifecycle.
+- [ ] Commit and push 7.2b: migrate mutations and derived getters.
+- [ ] Commit and push 7.2c: focused controller acceptance tests.
 
 ### Batch 7.3 - Remove InheritedNotifier Scope From UI
 
@@ -89,7 +99,9 @@
 - [ ] Replace navigation that benefits from GetX with `Get.to`, `Get.back`, and `Get.snackbar` only where it reduces boilerplate; keep standard Flutter navigation if it is clearer.
 - [ ] Remove `lib/app/shot_scope.dart` after all usages are gone.
 - [ ] Run `flutter analyze`.
-- [ ] Commit and push Batch 7.3.
+- [ ] Commit and push 7.3a: migrate app/home/shell state reads to GetX.
+- [ ] Commit and push 7.3b: migrate beans/history screens to GetX.
+- [ ] Commit and push 7.3c: migrate shot form/detail, navigation cleanup, and remove `ShotScope`.
 
 ### Batch 7.4 - Test Harness Migration
 
@@ -99,7 +111,9 @@
 - [ ] Update workflow tests for `Obx` rebuilds and GetX navigation.
 - [ ] Keep SQLite acceptance tests using temporary FFI database.
 - [ ] Run `flutter test --concurrency=1`.
-- [ ] Commit and push Batch 7.4.
+- [ ] Commit and push 7.4a: migrate widget test harness and controller injection.
+- [ ] Commit and push 7.4b: migrate workflow and SQLite acceptance tests.
+- [ ] Commit and push 7.4c: full sequential test validation fixes.
 
 ### Batch 7.5 - Final Cleanup and Documentation
 
@@ -109,4 +123,5 @@
 - [ ] Verify no runtime network dependency is introduced.
 - [ ] Run final `flutter pub get`, `flutter analyze`, and `flutter test --concurrency=1`.
 - [ ] Mark Task 7 checklist complete after validation.
-- [ ] Commit and push Batch 7.5.
+- [ ] Commit and push 7.5a: documentation updates.
+- [ ] Commit and push 7.5b: final cleanup, checklist completion, and validation evidence.
