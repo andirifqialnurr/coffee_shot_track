@@ -38,6 +38,7 @@ dependencies:
   path: ^1.9.1
   get: ^4.7.3
   shadcn_ui: ^0.53.6
+  google_fonts: ^8.2.1
 
 dev_dependencies:
   flutter_test:

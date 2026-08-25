@@ -94,6 +94,39 @@
 - [x] Commit and push 8.3a: shell and page layout polish.
 - [x] Commit and push 8.3b: form/action polish and validation.
 
+## Task 9 - Shadcn UI Consistency Repair
+
+### Commit Policy for Task 9
+
+- [x] Keep this repair split into multiple commits and push each commit.
+- [x] Preserve GetX state management and existing data workflows.
+- [ ] Validate analyzer and full tests before marking complete.
+
+### Batch 9.1 - Unified Theme, Font, and Light/Dark Tokens
+
+- [x] Add direct `google_fonts` dependency for Montserrat typography.
+- [x] Align Material and Shad color palettes to the same neutral/accent tokens.
+- [x] Configure Shad `ShadTextTheme`, card, and button themes from one source.
+- [x] Keep light and dark mode available through `ThemeMode.system`.
+- [x] Run `flutter pub get`.
+- [x] Run `flutter analyze`.
+- [x] Commit and push 9.1: theme/token/font repair.
+
+### Batch 9.2 - Layout and Component Consistency
+
+- [ ] Replace remaining default chips with shadcn-style filter/rating pills.
+- [ ] Center/constrain shell navigation and page content consistently.
+- [ ] Make card borders, spacing, and row affordances visibly consistent.
+- [ ] Run focused widget tests.
+- [ ] Commit and push 9.2: shadcn layout/component repair.
+
+### Batch 9.3 - Final Validation
+
+- [ ] Run `flutter analyze`.
+- [ ] Run `flutter test --concurrency=1`.
+- [ ] Verify `HEAD` matches `origin/main` after final push.
+- [ ] Commit and push 9.3: final validation evidence.
+
 ## Task 7 - GetX State Management Migration Plan
 
 ### Commit Policy for Task 7
