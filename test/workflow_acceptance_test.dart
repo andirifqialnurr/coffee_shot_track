@@ -7,6 +7,7 @@ import 'package:coffee_shot_track/features/shots/shot_form_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 void main() {
   tearDown(Get.reset);
@@ -61,9 +62,20 @@ void main() {
 Widget _wrap(ShotController controller, Widget child) {
   Get.put<ShotController>(controller);
 
-  return GetMaterialApp(
-    theme: ShotTheme.light(),
-    home: Scaffold(body: child),
+  return ShadApp.custom(
+    theme: ShotTheme.shadLight(),
+    darkTheme: ShotTheme.shadDark(),
+    themeMode: ThemeMode.light,
+    appBuilder: (context) => GetMaterialApp(
+      theme: ShotTheme.light(),
+      home: Scaffold(body: child),
+      localizationsDelegates: const [
+        GlobalShadLocalizations.delegate,
+      ],
+      builder: (context, child) => ShadAppBuilder(
+        child: child ?? const SizedBox.shrink(),
+      ),
+    ),
   );
 }
 

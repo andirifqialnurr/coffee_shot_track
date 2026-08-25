@@ -77,11 +77,11 @@
 
 ### Batch 8.2 - Shared Component Reskin
 
-- [ ] Replace shared cards, badges, empty states, metric tiles, and shot list rows with shadcn-styled primitives.
-- [ ] Use tighter borders, neutral surfaces, clear focus/hover affordances, and icon-first controls.
-- [ ] Keep text readable and stable across narrow screens.
-- [ ] Run focused widget tests.
-- [ ] Commit and push 8.2a: shared surface and badge reskin.
+- [x] Replace shared cards, badges, empty states, metric tiles, and shot list rows with shadcn-styled primitives.
+- [x] Use tighter borders, neutral surfaces, clear focus/hover affordances, and icon-first controls.
+- [x] Keep text readable and stable across narrow screens.
+- [x] Run focused widget tests.
+- [x] Commit and push 8.2a: shared surface and badge reskin.
 - [ ] Commit and push 8.2b: list rows, metric tiles, and empty states.
 
 ### Batch 8.3 - Screen-Level Polish
