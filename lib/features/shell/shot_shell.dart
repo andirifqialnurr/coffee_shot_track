@@ -82,19 +82,24 @@ class _ShotNavBar extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-          child: shad.ShadCard(
-            padding: const EdgeInsets.all(4),
-            child: Row(
-              children: [
-                for (var index = 0; index < items.length; index++)
-                  Expanded(
-                    child: _ShotNavItem(
-                      data: items[index],
-                      selected: selectedIndex == index,
-                      onTap: () => onSelected(index),
-                    ),
-                  ),
-              ],
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 760),
+              child: shad.ShadCard(
+                padding: const EdgeInsets.all(4),
+                child: Row(
+                  children: [
+                    for (var index = 0; index < items.length; index++)
+                      Expanded(
+                        child: _ShotNavItem(
+                          data: items[index],
+                          selected: selectedIndex == index,
+                          onTap: () => onSelected(index),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

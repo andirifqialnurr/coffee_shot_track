@@ -111,7 +111,7 @@ class ShotCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return shad.ShadCard(
       width: double.infinity,
-      padding: padding ?? const EdgeInsets.all(16),
+      padding: padding ?? const EdgeInsets.all(18),
       child: child,
     );
   }
@@ -440,6 +440,50 @@ class ShotActionButton extends StatelessWidget {
       onPressed: onPressed,
       leading: leading,
       width: width,
+      child: child,
+    );
+  }
+}
+
+class ShotFilterPill extends StatelessWidget {
+  const ShotFilterPill({
+    super.key,
+    required this.label,
+    required this.selected,
+    required this.onPressed,
+    this.icon,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onPressed;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final shadTheme = shad.ShadTheme.of(context);
+    final child = Text(label, maxLines: 1, overflow: TextOverflow.ellipsis);
+    final leading = icon == null ? null : Icon(icon, size: 15);
+
+    if (selected) {
+      return shad.ShadButton(
+        height: 36,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        onPressed: onPressed,
+        leading: leading,
+        backgroundColor: shadTheme.colorScheme.primary,
+        foregroundColor: shadTheme.colorScheme.primaryForeground,
+        child: child,
+      );
+    }
+
+    return shad.ShadButton.outline(
+      height: 36,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      onPressed: onPressed,
+      leading: leading,
+      backgroundColor: shadTheme.colorScheme.card,
+      foregroundColor: shadTheme.colorScheme.mutedForeground,
       child: child,
     );
   }

@@ -249,15 +249,16 @@ class _ShotFormPageState extends State<ShotFormPage> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
+                runSpacing: 8,
                 children: [
                   for (final rating in [1, 2, 3, 4, 5])
-                    ChoiceChip(
-                      label: Text('$rating'),
-                      avatar: const Icon(Icons.star, size: 16),
+                    ShotFilterPill(
+                      label: '$rating',
+                      icon: Icons.star,
                       selected: _rating == rating,
-                      onSelected: (selected) {
-                        setState(() => _rating = selected ? rating : null);
-                      },
+                      onPressed: () => setState(
+                        () => _rating = _rating == rating ? null : rating,
+                      ),
                     ),
                 ],
               ),

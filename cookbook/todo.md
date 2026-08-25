@@ -114,11 +114,11 @@
 
 ### Batch 9.2 - Layout and Component Consistency
 
-- [ ] Replace remaining default chips with shadcn-style filter/rating pills.
-- [ ] Center/constrain shell navigation and page content consistently.
-- [ ] Make card borders, spacing, and row affordances visibly consistent.
-- [ ] Run focused widget tests.
-- [ ] Commit and push 9.2: shadcn layout/component repair.
+- [x] Replace remaining default chips with shadcn-style filter/rating pills.
+- [x] Center/constrain shell navigation and page content consistently.
+- [x] Make card borders, spacing, and row affordances visibly consistent.
+- [x] Run focused widget tests.
+- [x] Commit and push 9.2: shadcn layout/component repair.
 
 ### Batch 9.3 - Final Validation
 

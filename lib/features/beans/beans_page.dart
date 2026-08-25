@@ -55,35 +55,46 @@ class _BeansPageState extends State<BeansPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                hintText: 'Search beans',
+            ShotCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.search),
+                      hintText: 'Search beans',
+                    ),
+                    onChanged: (value) => setState(() => _query = value),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ShotFilterPill(
+                        label: 'All',
+                        selected: _filter == null,
+                        icon: Icons.all_inclusive,
+                        onPressed: () => setState(() => _filter = null),
+                      ),
+                      ShotFilterPill(
+                        label: 'Active',
+                        selected: _filter == BeanStatus.active,
+                        icon: Icons.local_fire_department_outlined,
+                        onPressed: () =>
+                            setState(() => _filter = BeanStatus.active),
+                      ),
+                      ShotFilterPill(
+                        label: 'Finished',
+                        selected: _filter == BeanStatus.finished,
+                        icon: Icons.archive_outlined,
+                        onPressed: () =>
+                            setState(() => _filter = BeanStatus.finished),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              onChanged: (value) => setState(() => _query = value),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              children: [
-                ChoiceChip(
-                  label: const Text('All'),
-                  selected: _filter == null,
-                  onSelected: (_) => setState(() => _filter = null),
-                ),
-                ChoiceChip(
-                  label: const Text('Active'),
-                  selected: _filter == BeanStatus.active,
-                  onSelected: (_) =>
-                      setState(() => _filter = BeanStatus.active),
-                ),
-                ChoiceChip(
-                  label: const Text('Finished'),
-                  selected: _filter == BeanStatus.finished,
-                  onSelected: (_) =>
-                      setState(() => _filter = BeanStatus.finished),
-                ),
-              ],
             ),
             const SizedBox(height: 16),
             if (store.beans.isEmpty)
