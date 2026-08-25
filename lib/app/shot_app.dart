@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../data/shot_store.dart';
 import '../features/shell/shot_shell.dart';
 import 'shot_binding.dart';
-import 'shot_scope.dart';
 import 'shot_theme.dart';
 
 class ShotApp extends StatefulWidget {
@@ -37,16 +36,13 @@ class _ShotAppState extends State<ShotApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ShotScope(
-      store: _controller,
-      child: GetMaterialApp(
-        title: 'Shot',
-        theme: ShotTheme.light(),
-        darkTheme: ShotTheme.dark(),
-        themeMode: ThemeMode.system,
-        initialBinding: ShotBinding(controller: _controller),
-        home: const ShotShell(),
-      ),
+    return GetMaterialApp(
+      title: 'Shot',
+      theme: ShotTheme.light(),
+      darkTheme: ShotTheme.dark(),
+      themeMode: ThemeMode.system,
+      initialBinding: ShotBinding(controller: _controller),
+      home: const ShotShell(),
     );
   }
 }

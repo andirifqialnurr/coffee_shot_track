@@ -92,16 +92,16 @@
 
 ### Batch 7.3 - Remove InheritedNotifier Scope From UI
 
-- [ ] Remove `ShotScope` usage from app and feature screens.
-- [ ] Replace `ShotScope.of(context)` reads with `Get.find<ShotController>()`.
-- [ ] Wrap reactive UI sections with `Obx` where beans/shots/loading/error changes need rebuilds.
-- [ ] Keep form-local state such as selected bean, text controllers, rating selection, search query, and filters inside each widget unless it must be shared globally.
-- [ ] Replace navigation that benefits from GetX with `Get.to`, `Get.back`, and `Get.snackbar` only where it reduces boilerplate; keep standard Flutter navigation if it is clearer.
+- [x] Remove `ShotScope` usage from app and feature screens.
+- [x] Replace `ShotScope.of(context)` reads with `Get.find<ShotController>()`.
+- [x] Wrap reactive UI sections with `Obx` where beans/shots/loading/error changes need rebuilds.
+- [x] Keep form-local state such as selected bean, text controllers, rating selection, search query, and filters inside each widget unless it must be shared globally.
+- [x] Replace navigation that benefits from GetX with `Get.to`, `Get.back`, and `Get.snackbar` only where it reduces boilerplate; keep standard Flutter navigation if it is clearer.
 - [ ] Remove `lib/app/shot_scope.dart` after all usages are gone.
-- [ ] Run `flutter analyze`.
+- [x] Run `flutter analyze`.
 - [x] Commit and push 7.3a: migrate app/home/shell state reads to GetX.
 - [x] Commit and push 7.3b: migrate beans/history screens to GetX.
-- [ ] Commit and push 7.3c: migrate shot form/detail, navigation cleanup, and remove `ShotScope`.
+- [x] Commit and push 7.3c: migrate shot form/detail, navigation cleanup, and remove `ShotScope`.
 
 ### Batch 7.4 - Test Harness Migration
 
