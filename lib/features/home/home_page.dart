@@ -31,14 +31,14 @@ class HomePage extends StatelessWidget {
         title: 'Shot',
         subtitle: 'Brew log for repeatable espresso.',
         actions: [
-          IconButton(
+          ShotIconAction(
             tooltip: 'Settings',
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Settings are planned for V2.')),
               );
             },
-            icon: const Icon(Icons.settings_outlined),
+            icon: Icons.settings_outlined,
           ),
         ],
         child: Column(

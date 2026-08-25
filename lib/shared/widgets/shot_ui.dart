@@ -39,12 +39,10 @@ class ShotPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (Navigator.of(context).canPop()) ...[
-                          shad.ShadButton.ghost(
-                            width: 40,
-                            height: 40,
-                            padding: EdgeInsets.zero,
+                          ShotIconAction(
+                            tooltip: 'Back',
+                            icon: Icons.arrow_back,
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Icon(Icons.arrow_back, size: 20),
                           ),
                           const SizedBox(width: 6),
                         ],
@@ -443,6 +441,39 @@ class ShotActionButton extends StatelessWidget {
       leading: leading,
       width: width,
       child: child,
+    );
+  }
+}
+
+class ShotIconAction extends StatelessWidget {
+  const ShotIconAction({
+    super.key,
+    required this.tooltip,
+    required this.icon,
+    required this.onPressed,
+    this.selected = false,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final shadTheme = shad.ShadTheme.of(context);
+
+    return Tooltip(
+      message: tooltip,
+      child: shad.ShadButton.ghost(
+        width: 40,
+        height: 40,
+        padding: EdgeInsets.zero,
+        onPressed: onPressed,
+        backgroundColor:
+            selected ? shadTheme.colorScheme.secondary : Colors.transparent,
+        child: Icon(icon, size: 20),
+      ),
     );
   }
 }

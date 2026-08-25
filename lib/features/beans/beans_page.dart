@@ -46,10 +46,10 @@ class _BeansPageState extends State<BeansPage> {
         title: 'Beans',
         subtitle: 'Track the coffee behind each recipe.',
         actions: [
-          IconButton.filled(
+          ShotIconAction(
             tooltip: 'Add Bean',
             onPressed: () => showBeanFormSheet(context),
-            icon: const Icon(Icons.add),
+            icon: Icons.add,
           ),
         ],
         child: Column(
@@ -341,14 +341,14 @@ class BeanDetailPage extends StatelessWidget {
         appBar: AppBar(
           title: Text(bean.name),
           actions: [
-            IconButton(
+            ShotIconAction(
               tooltip: bean.status == BeanStatus.active
                   ? 'Mark Finished'
                   : 'Already Finished',
               onPressed: bean.status == BeanStatus.active
                   ? () => store.markBeanFinished(bean)
                   : null,
-              icon: const Icon(Icons.archive_outlined),
+              icon: Icons.archive_outlined,
             ),
           ],
         ),

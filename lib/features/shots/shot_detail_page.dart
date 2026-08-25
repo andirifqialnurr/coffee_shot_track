@@ -31,12 +31,13 @@ class ShotDetailPage extends StatelessWidget {
         appBar: AppBar(
           title: Text(bean?.name ?? 'Shot detail'),
           actions: [
-            IconButton(
+            ShotIconAction(
               tooltip: shot.isFavorite ? 'Remove Favorite' : 'Set Favorite',
               onPressed: () => store.toggleFavorite(shot),
-              icon: Icon(shot.isFavorite ? Icons.star : Icons.star_border),
+              icon: shot.isFavorite ? Icons.star : Icons.star_border,
+              selected: shot.isFavorite,
             ),
-            IconButton(
+            ShotIconAction(
               tooltip: 'Edit Shot',
               onPressed: () {
                 Navigator.of(context).push(
@@ -45,7 +46,7 @@ class ShotDetailPage extends StatelessWidget {
                   ),
                 );
               },
-              icon: const Icon(Icons.edit_outlined),
+              icon: Icons.edit_outlined,
             ),
           ],
         ),

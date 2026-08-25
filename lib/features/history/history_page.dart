@@ -77,7 +77,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: OutlinedButton.icon(
+                        child: ShotActionButton(
                           onPressed: () async {
                             final picked = await showDatePicker(
                               context: context,
@@ -91,10 +91,10 @@ class _HistoryPageState extends State<HistoryPage> {
                               setState(() => _date = picked);
                             }
                           },
-                          icon: const Icon(Icons.calendar_today_outlined),
-                          label: Text(
-                            _date == null ? 'Any date' : formatShortDate(_date!),
-                          ),
+                          icon: Icons.calendar_today_outlined,
+                          label:
+                              _date == null ? 'Any date' : formatShortDate(_date!),
+                          width: double.infinity,
                         ),
                       ),
                     ],
