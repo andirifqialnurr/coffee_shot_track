@@ -140,35 +140,49 @@
 
 ## Task 11 - Full UI Replacement From `main2.dart`
 
-### Current Blocker
+### Reference Snapshot
 
 - [x] Inspect `main2.dart` as the requested UI reference.
-- [x] Confirm `main2.dart` currently exists but is empty (`0` bytes), so its UI cannot yet be used as the visual source of truth.
-- [ ] Restore or populate `main2.dart` with the intended reference UI before implementation starts.
+- [x] Confirm `main2.dart` is now populated (`104390` bytes, `3083` lines) and can be used as the UI source of truth.
+- [x] Identify `main2.dart` as a single-file Flutter prototype with in-memory mock data, custom Material widgets, and no SQLite/GetX integration.
+- [x] Extract primary navigation: Home, Beans, New Shot, and History as bottom tabs, with Insights and Settings opened from Home header actions.
+- [x] Extract visual language: warm cream/espresso light mode, deep charcoal/caramel dark mode, 20px page gutters, 14-20px radii, bordered white/surface cards, soft shadows only on hero recipe cards, icon-led actions, uppercase section labels, and compact list rows.
+- [x] Extract component set: `_ShotBottomNav`, `SectionLabel`, `StarRating`, `StarRatingInput`, `UnitChip`, `StatusPill`, `RecipeCard`, `_HeroNumber`, `EmptyState`, `PrimaryButton`, `SecondaryButton`, `_FilterChip`, `AddBeanSheet`, `_LabeledField`, `_BeanSelector`, `_ParamGrid`, `_NumberField`, `_TextParamField`, `_StatCard`, and `_MiniStat`.
+- [x] Record typography decision: keep `main2.dart` scale and weights, but use Montserrat instead of the prototype's `Roboto` to satisfy the previous UI correction.
+- [x] Record implementation decision: use `shadcn_ui` only where it can faithfully match `main2.dart`; rewrite or delete previous shadcn/Material surfaces that conflict with the prototype.
 
 ### Commit Policy for Task 11
 
 - [ ] Split implementation into multiple meaningful commits and push each commit.
+- [ ] For every Task 11 batch with more than three implementation items, split the batch into at least two commits and push both.
 - [ ] Do not keep any old UI surface that conflicts with `main2.dart`.
 - [ ] Preserve GetX state management and SQLite persistence.
-- [ ] Keep light and dark mode support unless `main2.dart` explicitly defines a different theme policy.
+- [ ] Keep the app root stable so the full page body and bottom navigation both render; do not reintroduce nested app wrappers that hide the body.
+- [ ] Keep light and dark mode support using the `main2.dart` palette.
 - [ ] Run focused validation after each batch and full validation at the end.
 
 ### Batch 11.1 - Reference Extraction and Design-System Rewrite
 
-- [ ] Read the restored `main2.dart` completely.
-- [ ] Extract the exact layout structure, navigation pattern, typography, spacing, colors, radius, shadows, icons, and interaction style from `main2.dart`.
-- [ ] Replace `cookbook/design-system.md` so it uses `main2.dart` as the design source of truth.
-- [ ] Map every existing app screen to the corresponding `main2.dart` visual pattern: Home, Beans, Bean Detail, New/Edit Shot, Shot Detail, and History.
-- [ ] Identify any UI components in current `lib/shared/widgets/shot_ui.dart` that must be deleted instead of restyled.
-- [ ] Commit and push 11.1: `main2.dart` design-system and migration map.
+- [x] Read the refreshed `main2.dart` via full-file pass and targeted UI extraction for this TODO update.
+- [ ] Replace `cookbook/design-system.md` so it names `main2.dart` as the design source of truth.
+- [ ] Document palette tokens exactly:
+  - [ ] Light: background `#FBF3E8`, surface `#FFFFFF`, surfaceAlt `#F2E4D3`, primary `#4E3221`, onPrimary `#FBF3E8`, accent `#C5854A`, textPrimary `#2B211C`, textSecondary `#8A7B6E`, border `#E7D8C4`, danger `#B3492F`, success `#3F7A55`.
+  - [ ] Dark: background `#19140F`, surface `#241D17`, surfaceAlt `#2D241C`, primary/accent `#DFAA6D`, onPrimary `#241A10`, textPrimary `#F3E9DC`, textSecondary `#AA9C8C`, border `#3A2F25`, danger `#E07B5C`, success `#7EC195`.
+- [ ] Document typography using Montserrat with `main2.dart` sizing: page title 24-26/800, recipe hero number 30/800, ratio 26-28/800, section label 12/700 uppercase, body 14/400, captions 11-13.
+- [ ] Document spacing/radius rules from the prototype: 20px page gutter, 8-18px vertical rhythm, 14px inputs, 16px rows/buttons/stat cards, 18px bean detail cards, 20px recipe/active bean cards, 24px sheet top radius.
+- [ ] Map every current app screen to the prototype pattern: Home, Beans, Bean Detail, New/Edit Shot, Shot Detail, History, plus add or expose Insights and Settings from Home.
+- [ ] Identify existing `lib/shared/widgets/shot_ui.dart` widgets that must be replaced instead of restyled.
+- [ ] Commit and push 11.1a: refreshed TODO from `main2.dart`.
+- [ ] Commit and push 11.1b: design-system rewrite and migration map.
 
 ### Batch 11.2 - App Shell and Shared UI Replacement
 
-- [ ] Replace `ShotShell` navigation with the navigation model from `main2.dart`.
-- [ ] Replace `ShotPage`, `ShotCard`, `MetricTile`, `EmptyState`, `BeanStatusChip`, `ShotListTile`, action buttons, filter pills, and icon actions with components matching `main2.dart`.
-- [ ] Remove or rewrite old shadcn/Material helper components that are no longer part of the `main2.dart` visual system.
-- [ ] Ensure page body and bottom navigation both render correctly on mobile dimensions.
+- [ ] Replace `ShotShell` with the `main2.dart` structure: full-screen `Scaffold`, `SafeArea(top: false)`, active tab body, and custom bottom nav items Home/Beans/New Shot/History.
+- [ ] Keep tab state in the existing GetX/local shell boundary as appropriate; keep domain data in `ShotController`.
+- [ ] Rebuild shared UI around `main2.dart` primitives: section labels, star rating display/input, unit chips, status pills, recipe card, hero numbers, empty state, primary/secondary buttons, filter chips, stat cards, and number/text parameter fields.
+- [ ] Use `shadcn_ui` components only when their output can match the prototype's card/input/button behavior and tokens.
+- [ ] Remove or rewrite old shadcn/Material helper components that no longer belong to the `main2.dart` visual system.
+- [ ] Ensure body and bottom navigation render correctly on mobile dimensions, with no centered-only nav bug and no debug banner.
 - [ ] Run `flutter analyze`.
 - [ ] Run focused widget smoke tests.
 - [ ] Commit and push 11.2a: shell and shared UI foundation.
@@ -176,21 +190,24 @@
 
 ### Batch 11.3 - Home and Beans UI Replacement
 
-- [ ] Replace Home page layout to match `main2.dart` exactly, including hero/summary, active bean, last shot, insights, and recent shots.
-- [ ] Replace Beans page search/filter/list layout to match `main2.dart`.
-- [ ] Replace Add Bean sheet/form styling to match `main2.dart`.
-- [ ] Replace Bean Detail layout, actions, best shot, and shot history sections to match `main2.dart`.
+- [ ] Replace Home header with the prototype pattern: greeting, `Shot` title, Insights icon action, and Settings icon action.
+- [ ] Replace Home content with active bean gradient card, Last Shot recipe card, tasting notes quote, Brew Again/New Shot stacked actions, and Recent Shots rows.
+- [ ] Add or wire Insights route from Home using real GetX/SQLite data: total shots, average rating, most-used bean, and active-bean highlight range.
+- [ ] Replace Beans page with title, rounded search field, horizontal status filters, bordered bean rows, status pills, and extended Add Bean FAB.
+- [ ] Replace Add Bean bottom sheet with top drag handle, 24px top radius, labeled fields, roast-level chips, and full-width save action.
+- [ ] Replace Bean Detail with app bar actions, top bean info card, UnitChip metadata, Best Shot recipe card, Shot History rows, archive action, and bottom New Shot button.
 - [ ] Preserve all existing Home and Beans workflows.
 - [ ] Run Home/Beans focused tests or update tests to match the new UI contract.
 - [ ] Commit and push 11.3a: Home replacement.
-- [ ] Commit and push 11.3b: Beans and Bean Detail replacement.
+- [ ] Commit and push 11.3b: Insights route and data mapping.
+- [ ] Commit and push 11.3c: Beans, Add Bean sheet, and Bean Detail replacement.
 
 ### Batch 11.4 - Shot Form, Shot Detail, and History UI Replacement
 
-- [ ] Replace New/Edit Shot form layout to match `main2.dart`.
+- [ ] Replace New/Edit Shot form with prototype structure: app bar, Bean selector, Parameter Shot grid, live Brew Ratio panel, StarRatingInput, Tasting Notes box, and sticky save bar.
 - [ ] Preserve live ratio calculation, validation, save, update, and Brew Again behavior.
-- [ ] Replace Shot Detail layout and actions to match `main2.dart`.
-- [ ] Replace History filter and list layout to match `main2.dart`.
+- [ ] Replace Shot Detail with date header, RecipeCard, Rating & Notes card, sticky Brew Again/Edit/Delete action area, and confirmation dialog styling.
+- [ ] Replace History with title, horizontal bean filter chips, horizontal rating filter chips, and bordered `ShotRow` list.
 - [ ] Preserve bean filter, rating filter, date filter, delete, favorite, and navigation behavior.
 - [ ] Run workflow acceptance tests and update assertions only where visual text/structure intentionally changes.
 - [ ] Commit and push 11.4a: Shot form and Shot Detail replacement.
@@ -198,15 +215,18 @@
 
 ### Batch 11.5 - Light/Dark, Responsiveness, and Final Validation
 
+- [ ] Add Settings route from Home with a dark-mode switch matching the prototype, wired to the app theme state without replacing GetX domain state.
 - [ ] Verify `main2.dart` visual tokens work in both light and dark mode.
-- [ ] Fix any text overflow, uneven left/right spacing, unclear card boundaries, or inconsistent font sizing.
+- [ ] Replace any remaining old one-note palette, inconsistent font sizing, unclear card boundary, or uneven left/right spacing.
+- [ ] Fix text overflow in bottom nav labels, bean names, recipe numbers, filter chips, CTA buttons, and compact parameter grid.
 - [ ] Verify no debug banner is shown.
 - [ ] Run `flutter pub get`.
 - [ ] Run `flutter analyze`.
 - [ ] Run `flutter test --concurrency=1`.
 - [ ] Verify no unintended runtime network usage is introduced.
 - [ ] Verify `HEAD` matches `origin/main` after final push.
-- [ ] Commit and push 11.5: final UI replacement validation.
+- [ ] Commit and push 11.5a: settings/dark-mode polish.
+- [ ] Commit and push 11.5b: final UI replacement validation.
 
 ## Task 7 - GetX State Management Migration Plan
 
