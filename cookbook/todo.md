@@ -224,7 +224,7 @@
 - [x] Run `flutter analyze`.
 - [x] Run `flutter test --concurrency=1`.
 - [x] Verify no unintended runtime network usage is introduced.
-- [ ] Verify `HEAD` matches `origin/main` after final push.
+- [x] Verify `HEAD` matches `origin/main` after final push.
 - [ ] Commit and push 11.5a: settings/dark-mode polish.
 - [ ] Commit and push 11.5b: final UI replacement validation.
 
