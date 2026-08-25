@@ -32,13 +32,13 @@
 
 ## Task 4 - Validation and Polish
 
-- [ ] Update widget tests away from counter app.
-- [ ] Add focused ratio/helper tests if practical.
-- [ ] Run `flutter pub get`.
-- [ ] Run `flutter analyze`.
-- [ ] Run `flutter test --concurrency=1`.
-- [ ] Fix validation issues found during checks.
-- [ ] Commit and push Task 4.
+- [x] Update widget tests away from counter app.
+- [x] Add focused ratio/helper tests if practical.
+- [x] Run `flutter pub get`.
+- [x] Run `flutter analyze`.
+- [x] Run `flutter test --concurrency=1`.
+- [x] Fix validation issues found during checks.
+- [x] Commit and push Task 4.
 
 ## Manual Acceptance Checklist
 
