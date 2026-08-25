@@ -24,11 +24,17 @@ void main() {
     );
     await tester.pump();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Dose in'), '18');
-    await tester.enterText(find.widgetWithText(TextFormField, 'Yield out'), '36');
+    await tester.enterText(find.byKey(const ValueKey('param-Dose in')), '18');
+    await tester.enterText(find.byKey(const ValueKey('param-Yield out')), '36');
     await tester.pump();
 
-    expect(find.text('1:2.00'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('BREW RATIO'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    expect(find.text('1 : 2.00'), findsOneWidget);
   });
 
   testWidgets('history filters shots by bean', (tester) async {
@@ -46,16 +52,16 @@ void main() {
     await tester.pumpWidget(_wrap(controller, const HistoryPage()));
     await tester.pump();
 
-    expect(find.text('Kenya Nyeri'), findsOneWidget);
-    expect(find.text('Brazil Cerrado'), findsOneWidget);
+    expect(find.text('18.0g -> 36.0g * 28s'), findsOneWidget);
+    expect(find.text('19.0g -> 38.0g * 28s'), findsOneWidget);
 
-    await tester.tap(find.text('All beans'));
+    await tester.tap(find.text('Semua Bean'));
     await tester.pump();
-    await tester.tap(find.text('Brazil Cerrado').last);
+    await tester.tap(find.text('Brazil Cerrado').first);
     await tester.pump();
 
-    expect(find.text('Kenya Nyeri'), findsNothing);
-    expect(find.text('Brazil Cerrado'), findsWidgets);
+    expect(find.text('18.0g -> 36.0g * 28s'), findsNothing);
+    expect(find.text('19.0g -> 38.0g * 28s'), findsOneWidget);
   });
 }
 

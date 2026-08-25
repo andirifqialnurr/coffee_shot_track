@@ -11,7 +11,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Shot', skipOffstage: false), findsOneWidget);
-    expect(find.text('No beans yet', skipOffstage: false), findsOneWidget);
+    expect(find.text('Belum ada beans', skipOffstage: false), findsOneWidget);
     expect(find.text('Home', skipOffstage: false), findsOneWidget);
     expect(find.text('Beans', skipOffstage: false), findsOneWidget);
     expect(find.text('New Shot', skipOffstage: false), findsWidgets);

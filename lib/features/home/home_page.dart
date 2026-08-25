@@ -1,204 +1,205 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../app/shot_theme.dart';
 import '../../data/shot_store.dart';
-import '../../domain/shot_metrics.dart' as metrics;
+import '../../domain/coffee_bean.dart';
 import '../../shared/widgets/shot_ui.dart';
-import '../beans/beans_page.dart';
 import '../shots/shot_detail_page.dart';
 import '../shots/shot_form_page.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.onNewShot});
+  const HomePage({
+    super.key,
+    required this.onNewShot,
+    required this.onShowHistory,
+    required this.onShowBeans,
+    required this.onShowInsights,
+    required this.onShowSettings,
+  });
 
   final VoidCallback onNewShot;
+  final VoidCallback onShowHistory;
+  final VoidCallback onShowBeans;
+  final VoidCallback onShowInsights;
+  final VoidCallback onShowSettings;
 
   @override
   Widget build(BuildContext context) {
     final store = Get.find<ShotController>();
-    final colors = Theme.of(context).extension<ShotColors>()!;
 
     return Obx(() {
-      final activeBean = store.activeOrRecentBean;
-      final lastShot = store.lastShot;
-
       if (store.isLoading) {
         return const Center(child: CircularProgressIndicator());
       }
 
-      return ShotPage(
-        title: 'Shot',
-        subtitle: 'Brew log for repeatable espresso.',
-        actions: [
-          ShotIconAction(
-            tooltip: 'Settings',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Settings are planned for V2.')),
-              );
-            },
-            icon: Icons.settings_outlined,
-          ),
-        ],
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (activeBean == null)
-              EmptyState(
-                icon: Icons.coffee_maker_outlined,
-                title: 'No beans yet',
-                message: 'Add beans first so every shot has context.',
-                action: ShotActionButton(
-                  onPressed: () => showBeanFormSheet(context),
-                  icon: Icons.add,
-                  label: 'Add Bean',
-                  primary: true,
-                ),
-              )
-            else
-              ShotCard(
-                child: Column(
+      final colors = shotColors(context);
+      final activeBean = store.activeOrRecentBean;
+      final lastShot = store.lastShot;
+      final recent = store.recentShots;
+
+      return ShotPageFrame(
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Active bean',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge
-                                    ?.copyWith(color: colors.mutedText),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                activeBean.name,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(fontWeight: FontWeight.w800),
-                              ),
-                              if (activeBean.roaster != null) ...[
-                                const SizedBox(height: 2),
-                                Text(activeBean.roaster!),
-                              ],
-                            ],
-                          ),
+                        Text(
+                          greetingLabel(),
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
-                        BeanStatusChip(status: activeBean.status),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Shot',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    if (lastShot == null)
-                      Text(
-                        'No shots logged yet.',
-                        style: TextStyle(color: colors.mutedText),
-                      )
-                    else ...[
-                      Text(
-                        'Last Shot',
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge
-                            ?.copyWith(color: colors.mutedText),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        metrics.formatShotLine(lastShot),
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.w800),
-                      ),
-                      if (lastShot.tastingNotes?.isNotEmpty ?? false) ...[
-                        const SizedBox(height: 6),
-                        Text(
-                          lastShot.tastingNotes!,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ],
-                    const SizedBox(height: 16),
                     Row(
                       children: [
-                        Expanded(
-                          child: ShotActionButton(
-                            onPressed: lastShot == null
-                                ? null
-                                : () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute<void>(
-                                        builder: (_) => ShotFormPage(
-                                          initialShot:
-                                          lastShot.duplicateForBrewAgain(),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                            icon: Icons.replay,
-                            label: 'Brew Again',
-                            primary: true,
-                            width: double.infinity,
-                          ),
+                        ShotIconAction(
+                          tooltip: 'Insights',
+                          icon: Icons.insights_rounded,
+                          onPressed: onShowInsights,
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: ShotActionButton(
-                            onPressed: onNewShot,
-                            icon: Icons.add,
-                            label: 'New Shot',
-                            width: double.infinity,
-                          ),
+                        ShotIconAction(
+                          tooltip: 'Settings',
+                          icon: Icons.settings_outlined,
+                          onPressed: onShowSettings,
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-            const SizedBox(height: 16),
-            _InsightGrid(
-              totalShots: store.totalShots,
-              averageRating: store.averageRating,
-              mostUsedBean: store.mostUsedBean?.name ?? '-',
             ),
-            const SizedBox(height: 20),
-            const ShotSectionHeader(title: 'Recent shots'),
-            const SizedBox(height: 8),
-            if (store.recentShots.isEmpty)
-              EmptyState(
-                icon: Icons.history_outlined,
-                title: 'No shot history',
-                message: 'Your latest 3 shots will show here.',
-                action: ShotActionButton(
-                  onPressed: onNewShot,
-                  icon: Icons.add,
-                  label: 'New Shot',
+            if (activeBean == null)
+              SliverToBoxAdapter(
+                child: EmptyState(
+                  icon: Icons.eco_outlined,
+                  title: 'Belum ada beans',
+                  subtitle:
+                      'Tambahkan beans pertama Anda untuk mulai mencatat shot.',
+                  ctaLabel: 'Add Beans',
+                  onCta: onShowBeans,
                 ),
               )
-            else
-              ShotCard(
-                child: Column(
-                  children: [
-                    for (final shot in store.recentShots)
-                      ShotListTile(
-                        shot: shot,
-                        bean: store.beanById(shot.beanId),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => ShotDetailPage(shotId: shot.id!),
-                            ),
-                          );
-                        },
-                      ),
-                  ],
+            else ...[
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                  child: _ActiveBeanCard(bean: activeBean),
                 ),
               ),
+              const SliverToBoxAdapter(child: SectionLabel('Last Shot')),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: lastShot == null
+                      ? EmptyState(
+                          icon: Icons.local_cafe_outlined,
+                          title: 'Belum ada shot',
+                          subtitle:
+                              'Catat shot pertama Anda untuk beans ini.',
+                          ctaLabel: 'New Shot',
+                          onCta: onNewShot,
+                        )
+                      : GestureDetector(
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) =>
+                                  ShotDetailPage(shotId: lastShot.id!),
+                            ),
+                          ),
+                          child: RecipeCard(
+                            shot: lastShot,
+                            beanName: store.beanById(lastShot.beanId)?.name,
+                          ),
+                        ),
+                ),
+              ),
+              if ((lastShot?.tastingNotes ?? '').isNotEmpty)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                    child: Text(
+                      '"${lastShot!.tastingNotes}"',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: colors.textSecondary,
+                            fontStyle: FontStyle.italic,
+                          ),
+                    ),
+                  ),
+                ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                  child: Column(
+                    children: [
+                      PrimaryButton(
+                        label: 'Brew Again',
+                        icon: Icons.replay_rounded,
+                        onPressed: lastShot == null
+                            ? null
+                            : () => Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                    builder: (_) => ShotFormPage(
+                                      initialShot:
+                                          lastShot.duplicateForBrewAgain(),
+                                    ),
+                                  ),
+                                ),
+                      ),
+                      const SizedBox(height: 10),
+                      SecondaryButton(
+                        label: 'New Shot',
+                        icon: Icons.add_rounded,
+                        onPressed: onNewShot,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: SectionLabel(
+                  'Recent Shots',
+                  trailing: TextButton(
+                    onPressed: onShowHistory,
+                    child: const Text('Lihat semua'),
+                  ),
+                ),
+              ),
+              if (recent.isEmpty)
+                const SliverToBoxAdapter(child: SizedBox.shrink())
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverList.separated(
+                    itemCount: recent.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      final shot = recent[index];
+                      return ShotRow(
+                        shot: shot,
+                        beanName: store.beanById(shot.beanId)?.name ?? '-',
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => ShotDetailPage(shotId: shot.id!),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            ],
           ],
         ),
       );
@@ -206,49 +207,89 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class _InsightGrid extends StatelessWidget {
-  const _InsightGrid({
-    required this.totalShots,
-    required this.averageRating,
-    required this.mostUsedBean,
-  });
+class _ActiveBeanCard extends StatelessWidget {
+  const _ActiveBeanCard({required this.bean});
 
-  final int totalShots;
-  final double averageRating;
-  final String mostUsedBean;
+  final CoffeeBean bean;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final columns = constraints.maxWidth < 360 ? 1 : 3;
-        return GridView.count(
-          crossAxisCount: columns,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
-          childAspectRatio: columns == 1 ? 3.8 : 1.1,
-          children: [
-            MetricTile(
-              label: 'Total',
-              value: totalShots.toString(),
-              unit: 'shots',
-              icon: Icons.coffee,
+    final colors = shotColors(context);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [colors.primary, colors.primary.withValues(alpha: 0.85)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: colors.onPrimary.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(14),
             ),
-            MetricTile(
-              label: 'Avg rating',
-              value: averageRating == 0 ? '-' : averageRating.toStringAsFixed(1),
-              icon: Icons.star_outline,
+            child: Icon(Icons.eco_rounded, color: colors.onPrimary),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Sedang diseduh',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: colors.onPrimary.withValues(alpha: 0.75),
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  bean.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: colors.onPrimary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+                if (bean.roaster != null)
+                  Text(
+                    bean.roaster!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colors.onPrimary.withValues(alpha: 0.8),
+                        ),
+                  ),
+              ],
             ),
-            MetricTile(
-              label: 'Most used',
-              value: mostUsedBean,
-              icon: Icons.local_cafe_outlined,
-            ),
-          ],
-        );
-      },
+          ),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: colors.onPrimary.withValues(alpha: 0.8),
+          ),
+        ],
+      ),
     );
   }
+}
+
+String greetingLabel() {
+  final hour = DateTime.now().hour;
+  if (hour < 11) {
+    return 'Selamat pagi';
+  }
+  if (hour < 15) {
+    return 'Selamat siang';
+  }
+  if (hour < 18) {
+    return 'Selamat sore';
+  }
+  return 'Selamat malam';
 }

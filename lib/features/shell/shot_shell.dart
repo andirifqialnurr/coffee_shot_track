@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart' as shad;
 
-import '../../app/shot_theme.dart';
+import '../../shared/widgets/shot_ui.dart';
 import '../beans/beans_page.dart';
 import '../history/history_page.dart';
 import '../home/home_page.dart';
+import '../insights/insights_page.dart';
+import '../settings/settings_page.dart';
 import '../shots/shot_form_page.dart';
 
 class ShotShell extends StatefulWidget {
-  const ShotShell({super.key});
+  const ShotShell({
+    super.key,
+    required this.themeMode,
+    required this.onThemeModeChanged,
+  });
+
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode> onThemeModeChanged;
 
   @override
   State<ShotShell> createState() => _ShotShellState();
@@ -17,178 +25,128 @@ class ShotShell extends StatefulWidget {
 class _ShotShellState extends State<ShotShell> {
   int _index = 0;
 
+  void _goToTab(int index) {
+    setState(() => _index = index);
+  }
+
   @override
   Widget build(BuildContext context) {
     final pages = [
-      HomePage(onNewShot: () => setState(() => _index = 2)),
+      HomePage(
+        onNewShot: () => _goToTab(2),
+        onShowHistory: () => _goToTab(3),
+        onShowBeans: () => _goToTab(1),
+        onShowInsights: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const InsightsPage()),
+          );
+        },
+        onShowSettings: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => SettingsPage(
+                themeMode: widget.themeMode,
+                onThemeModeChanged: widget.onThemeModeChanged,
+              ),
+            ),
+          );
+        },
+      ),
       const BeansPage(),
       const ShotFormPage(),
       const HistoryPage(),
     ];
 
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(child: pages[_index]),
-          _ShotNavBar(
-            selectedIndex: _index,
-            onSelected: (value) => setState(() => _index = value),
-            items: const [
-              _ShotNavItemData(
-                icon: Icons.home_outlined,
-                selectedIcon: Icons.home,
-                label: 'Home',
-              ),
-              _ShotNavItemData(
-                icon: Icons.coffee_outlined,
-                selectedIcon: Icons.coffee,
-                label: 'Beans',
-              ),
-              _ShotNavItemData(
-                icon: Icons.add_circle_outline,
-                selectedIcon: Icons.add_circle,
-                label: 'New Shot',
-              ),
-              _ShotNavItemData(
-                icon: Icons.history_outlined,
-                selectedIcon: Icons.history,
-                label: 'History',
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ShotNavBar extends StatelessWidget {
-  const _ShotNavBar({
-    required this.selectedIndex,
-    required this.onSelected,
-    required this.items,
-  });
-
-  final int selectedIndex;
-  final ValueChanged<int> onSelected;
-  final List<_ShotNavItemData> items;
-
-  @override
-  Widget build(BuildContext context) {
-    final shadTheme = shad.ShadTheme.of(context);
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: shadTheme.colorScheme.background,
-        border: Border(top: BorderSide(color: shadTheme.colorScheme.border)),
-      ),
-      child: SafeArea(
+      body: SafeArea(
         top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 760),
-              child: shad.ShadCard(
-                padding: const EdgeInsets.all(4),
-                child: Row(
-                  children: [
-                    for (var index = 0; index < items.length; index++)
-                      Expanded(
-                        child: _ShotNavItem(
-                          data: items[index],
-                          selected: selectedIndex == index,
-                          onTap: () => onSelected(index),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
+        child: pages[_index],
+      ),
+      bottomNavigationBar: _ShotBottomNav(
+        currentIndex: _index,
+        onTap: _goToTab,
       ),
     );
   }
 }
 
-class _ShotNavItem extends StatelessWidget {
-  const _ShotNavItem({
-    required this.data,
-    required this.selected,
+class _ShotBottomNav extends StatelessWidget {
+  const _ShotBottomNav({
+    required this.currentIndex,
     required this.onTap,
   });
 
-  final _ShotNavItemData data;
-  final bool selected;
-  final VoidCallback onTap;
+  final int currentIndex;
+  final ValueChanged<int> onTap;
 
   @override
   Widget build(BuildContext context) {
-    final shadTheme = shad.ShadTheme.of(context);
-    final colors = Theme.of(context).extension<ShotColors>()!;
-    final foreground = selected
-        ? shadTheme.colorScheme.primaryForeground
-        : shadTheme.colorScheme.mutedForeground;
+    final colors = shotColors(context);
+    final items = [
+      (Icons.coffee_rounded, 'Home'),
+      (Icons.eco_outlined, 'Beans'),
+      (Icons.add_circle_outline_rounded, 'New Shot'),
+      (Icons.history_rounded, 'History'),
+    ];
 
-    return Tooltip(
-      message: data.label,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8),
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          height: 48,
-          margin: const EdgeInsets.symmetric(horizontal: 2),
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            color: selected
-                ? shadTheme.colorScheme.primary
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: selected
-                  ? colors.caramel.withValues(alpha: 0.35)
-                  : Colors.transparent,
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                selected ? data.selectedIcon : data.icon,
-                size: 20,
-                color: foreground,
-              ),
-              const SizedBox(height: 3),
-              Flexible(
-                child: Text(
-                  data.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: foreground,
-                        fontWeight:
-                            selected ? FontWeight.w800 : FontWeight.w600,
-                      ),
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        border: Border(top: BorderSide(color: colors.border)),
+      ),
+      padding: const EdgeInsets.only(top: 6, bottom: 8),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(items.length, (index) {
+            final selected = index == currentIndex;
+            final (icon, label) = items[index];
+            return Expanded(
+              child: Tooltip(
+                message: label,
+                child: InkWell(
+                  onTap: () => onTap(index),
+                  borderRadius: BorderRadius.circular(14),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          icon,
+                          color: selected
+                              ? colors.primary
+                              : colors.textSecondary,
+                          size: 24,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: selected
+                                        ? colors.primary
+                                        : colors.textSecondary,
+                                    fontWeight: selected
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                  ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ],
-          ),
+            );
+          }),
         ),
       ),
     );
   }
-}
-
-class _ShotNavItemData {
-  const _ShotNavItemData({
-    required this.icon,
-    required this.selectedIcon,
-    required this.label,
-  });
-
-  final IconData icon;
-  final IconData selectedIcon;
-  final String label;
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../app/shot_theme.dart';
 import '../../data/shot_store.dart';
+import '../../domain/coffee_bean.dart';
 import '../../domain/espresso_shot.dart';
 import '../../domain/shot_metrics.dart' as metrics;
 import '../../shared/widgets/shot_ui.dart';
@@ -23,7 +23,6 @@ class ShotFormPage extends StatefulWidget {
 }
 
 class _ShotFormPageState extends State<ShotFormPage> {
-  final _formKey = GlobalKey<FormState>();
   final _dose = TextEditingController();
   final _yield = TextEditingController();
   final _time = TextEditingController();
@@ -32,10 +31,14 @@ class _ShotFormPageState extends State<ShotFormPage> {
   final _notes = TextEditingController();
 
   int? _beanId;
-  int? _rating;
+  int _rating = 0;
   bool _initialized = false;
+  bool _touchedDose = false;
+  bool _touchedYield = false;
 
   bool get _isEditing => widget.initialShot?.id != null;
+  bool get _isPushedRoute =>
+      widget.initialBeanId != null || widget.initialShot != null;
 
   @override
   void initState() {
@@ -47,14 +50,11 @@ class _ShotFormPageState extends State<ShotFormPage> {
       _yield.text = _formatInputNumber(shot.yieldG);
       _time.text = shot.extractionSec?.toString() ?? '';
       _grind.text = shot.grindSetting ?? '';
-      _temperature.text = shot.temperatureC == null
-          ? ''
-          : _formatInputNumber(shot.temperatureC!);
-      _rating = shot.rating;
+      _temperature.text =
+          shot.temperatureC == null ? '' : _formatInputNumber(shot.temperatureC!);
+      _rating = shot.rating ?? 0;
       _notes.text = shot.tastingNotes ?? '';
     }
-    _dose.addListener(_ratioChanged);
-    _yield.addListener(_ratioChanged);
   }
 
   @override
@@ -83,233 +83,232 @@ class _ShotFormPageState extends State<ShotFormPage> {
     super.dispose();
   }
 
-  void _ratioChanged() {
-    if (mounted) {
-      setState(() {});
+  double get _doseValue => _parseDouble(_dose.text) ?? 0;
+  double get _yieldValue => _parseDouble(_yield.text) ?? 0;
+
+  String? get _doseError {
+    if (!_touchedDose) {
+      return null;
     }
+    if (_dose.text.trim().isEmpty) {
+      return 'Dose wajib diisi';
+    }
+    if (_doseValue <= 0) {
+      return 'Dose > 0';
+    }
+    return null;
   }
+
+  String? get _yieldError {
+    if (!_touchedYield) {
+      return null;
+    }
+    if (_yield.text.trim().isEmpty) {
+      return 'Yield wajib diisi';
+    }
+    if (_yieldValue < 0) {
+      return 'Yield >= 0';
+    }
+    return null;
+  }
+
+  bool get _canSave =>
+      _beanId != null &&
+      _dose.text.trim().isNotEmpty &&
+      _doseValue > 0 &&
+      _yield.text.trim().isNotEmpty &&
+      _yieldValue >= 0;
 
   @override
   Widget build(BuildContext context) {
     final store = Get.find<ShotController>();
-    final colors = Theme.of(context).extension<ShotColors>()!;
 
     return Obx(() {
+      final colors = shotColors(context);
       final beans = store.beans;
-      final ratio = metrics.formatRatio(
-        _parseDouble(_dose.text) ?? 0,
-        _parseDouble(_yield.text) ?? 0,
-      );
-
-      if (beans.isEmpty) {
-        return ShotPage(
-          title: 'New Shot',
-          subtitle: 'Add beans before logging espresso.',
-          child: EmptyState(
-            icon: Icons.coffee_outlined,
-            title: 'No beans available',
-            message: 'Every shot needs a bean record for comparison.',
-            action: ShotActionButton(
-              onPressed: () => showBeanFormSheet(context),
-              icon: Icons.add,
-              label: 'Add Bean',
-              primary: true,
-            ),
-          ),
-        );
-      }
-
-      return ShotPage(
-        title: _isEditing ? 'Edit Shot' : 'New Shot',
-        subtitle: 'Follow the brewing order and save the actual result.',
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DropdownButtonFormField<int>(
-                initialValue: _beanId,
-                decoration: const InputDecoration(
-                  labelText: 'Bean',
-                  prefixIcon: Icon(Icons.coffee_outlined),
-                ),
-                items: [
-                  for (final bean in beans)
-                    DropdownMenuItem(
-                      value: bean.id,
-                      child: Text(bean.name),
-                    ),
-                ],
-                onChanged: (value) => setState(() => _beanId = value),
-                validator: (value) => value == null ? 'Choose a bean' : null,
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _NumberField(
-                      controller: _dose,
-                      label: 'Dose in',
-                      suffix: 'g',
-                      validator: (value) {
-                        final parsed = _parseDouble(value ?? '');
-                        if (parsed == null || parsed <= 0) {
-                          return 'Dose > 0';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _NumberField(
-                      controller: _yield,
-                      label: 'Yield out',
-                      suffix: 'g',
-                      validator: (value) {
-                        final parsed = _parseDouble(value ?? '');
-                        if (parsed == null || parsed < 0) {
-                          return 'Yield >= 0';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _NumberField(
-                      controller: _time,
-                      label: 'Time',
-                      suffix: 'sec',
-                      allowDecimal: false,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _NumberField(
-                      controller: _temperature,
-                      label: 'Temp',
-                      suffix: 'C',
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _grind,
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Grind setting',
-                  prefixIcon: Icon(Icons.tune),
-                  hintText: '4.2, 12 clicks, or custom',
-                ),
-              ),
-              const SizedBox(height: 12),
-              ShotCard(
-                child: Row(
+      final body = beans.isEmpty
+          ? EmptyState(
+              icon: Icons.eco_outlined,
+              title: 'Tambahkan beans dulu',
+              subtitle: 'Anda perlu menambahkan beans sebelum mencatat shot.',
+              ctaLabel: 'Add Beans',
+              onCta: () => showBeanFormSheet(context),
+            )
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final compactGrid = constraints.maxWidth < 360;
+                return ListView(
+                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 140),
                   children: [
-                    Expanded(
+                    const SectionLabel('Bean'),
+                    _BeanSelector(
+                      beans: beans,
+                      selectedId: _beanId,
+                      onChanged: (id) => setState(() => _beanId = id),
+                    ),
+                    const SectionLabel('Parameter Shot'),
+                    ParamGrid(
+                      compact: compactGrid,
+                      children: [
+                        NumberParamField(
+                          label: 'Dose in',
+                          unit: 'g',
+                          controller: _dose,
+                          icon: Icons.grain_rounded,
+                          onChanged: (_) => setState(() {}),
+                          onEditingComplete: () =>
+                              setState(() => _touchedDose = true),
+                          error: _doseError,
+                        ),
+                        NumberParamField(
+                          label: 'Yield out',
+                          unit: 'g',
+                          controller: _yield,
+                          icon: Icons.local_cafe_outlined,
+                          onChanged: (_) => setState(() {}),
+                          onEditingComplete: () =>
+                              setState(() => _touchedYield = true),
+                          error: _yieldError,
+                        ),
+                        NumberParamField(
+                          label: 'Extraction time',
+                          unit: 'sec',
+                          controller: _time,
+                          icon: Icons.timer_outlined,
+                          isInt: true,
+                        ),
+                        TextParamField(
+                          label: 'Grind setting',
+                          controller: _grind,
+                          icon: Icons.tune_rounded,
+                          hint: '4.2 / 12 clicks',
+                        ),
+                        NumberParamField(
+                          label: 'Temperature',
+                          unit: 'C',
+                          controller: _temperature,
+                          icon: Icons.thermostat_outlined,
+                          optional: true,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceAlt,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Brew ratio',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge
-                                ?.copyWith(color: colors.mutedText),
+                            'BREW RATIO',
+                            style:
+                                Theme.of(context).textTheme.labelSmall?.copyWith(
+                                      color: colors.textSecondary,
+                                    ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            ratio,
+                            _doseValue > 0
+                                ? formatSpacedRatio(_doseValue, _yieldValue)
+                                : '1 : -',
                             style: Theme.of(context)
                                 .textTheme
                                 .headlineMedium
-                                ?.copyWith(fontWeight: FontWeight.w800),
+                                ?.copyWith(color: colors.primary),
+                          ),
+                          Text(
+                            metrics.formatRatio(_doseValue, _yieldValue),
+                            style: const TextStyle(fontSize: 0),
                           ),
                         ],
                       ),
                     ),
-                    const Icon(Icons.calculate_outlined),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Rating',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final rating in [1, 2, 3, 4, 5])
-                    ShotFilterPill(
-                      label: '$rating',
-                      icon: Icons.star,
-                      selected: _rating == rating,
-                      onPressed: () => setState(
-                        () => _rating = _rating == rating ? null : rating,
+                    const SectionLabel('Rating'),
+                    ShotCard(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Center(
+                        child: StarRatingInput(
+                          rating: _rating,
+                          onChanged: (value) => setState(() => _rating = value),
+                        ),
                       ),
                     ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _notes,
-                minLines: 3,
-                maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: 'Tasting notes',
-                  prefixIcon: Icon(Icons.notes_outlined),
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ShotActionButton(
-                  onPressed: () => _save(context),
-                  icon: Icons.save_outlined,
-                  label: _isEditing ? 'Update Shot' : 'Save Shot',
-                  primary: true,
-                  width: double.infinity,
-                ),
-              ),
-            ],
+                    const SectionLabel('Tasting Notes'),
+                    TextField(
+                      controller: _notes,
+                      maxLines: 4,
+                      style: TextStyle(color: colors.textPrimary),
+                      decoration: const InputDecoration(
+                        hintText:
+                            'mis. Manis, jeruk, aftertaste bersih...',
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+
+      return Scaffold(
+        backgroundColor: colors.background,
+        appBar: AppBar(
+          automaticallyImplyLeading: _isPushedRoute,
+          title: Text(
+            _isEditing
+                ? 'Edit Shot'
+                : widget.initialShot != null
+                    ? 'Brew Again'
+                    : 'New Shot',
           ),
         ),
+        body: body,
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 14),
+            decoration: BoxDecoration(
+              color: colors.background,
+              border: Border(top: BorderSide(color: colors.border)),
+            ),
+            child: PrimaryButton(
+              label: _isEditing ? 'Simpan Perubahan' : 'Save Shot',
+              icon: Icons.check_rounded,
+              onPressed: beans.isEmpty ? null : () => _save(context),
+            ),
+          ),
+        ),
+        resizeToAvoidBottomInset: true,
       );
     });
   }
 
   Future<void> _save(BuildContext context) async {
-    if (!_formKey.currentState!.validate()) {
+    setState(() {
+      _touchedDose = true;
+      _touchedYield = true;
+    });
+    if (!_canSave) {
       return;
     }
+
     final store = Get.find<ShotController>();
     final now = DateTime.now();
     final source = widget.initialShot;
     final shot = EspressoShot(
       id: source?.id,
       beanId: _beanId!,
-      doseG: _parseDouble(_dose.text)!,
-      yieldG: _parseDouble(_yield.text)!,
+      doseG: _doseValue,
+      yieldG: _yieldValue,
       extractionSec: _parseInt(_time.text),
       temperatureC: _parseDouble(_temperature.text),
       grindSetting: _blankToNull(_grind.text),
-      rating: _rating,
+      rating: _rating == 0 ? null : _rating,
       tastingNotes: _blankToNull(_notes.text),
       isFavorite: source?.isFavorite ?? false,
-      brewedAt: source?.brewedAt ?? now,
-      createdAt: source?.createdAt ?? now,
+      brewedAt: _isEditing ? source!.brewedAt : now,
+      createdAt: _isEditing ? source!.createdAt : now,
       updatedAt: now,
     );
 
@@ -322,6 +321,7 @@ class _ShotFormPageState extends State<ShotFormPage> {
     if (!context.mounted) {
       return;
     }
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(_isEditing ? 'Shot updated.' : 'Shot saved.')),
     );
@@ -339,33 +339,52 @@ class _ShotFormPageState extends State<ShotFormPage> {
     _grind.clear();
     _temperature.clear();
     _notes.clear();
-    setState(() => _rating = null);
+    setState(() {
+      _rating = 0;
+      _touchedDose = false;
+      _touchedYield = false;
+    });
   }
 }
 
-class _NumberField extends StatelessWidget {
-  const _NumberField({
-    required this.controller,
-    required this.label,
-    required this.suffix,
-    this.allowDecimal = true,
-    this.validator,
+class _BeanSelector extends StatelessWidget {
+  const _BeanSelector({
+    required this.beans,
+    required this.selectedId,
+    required this.onChanged,
   });
 
-  final TextEditingController controller;
-  final String label;
-  final String suffix;
-  final bool allowDecimal;
-  final FormFieldValidator<String>? validator;
+  final List<CoffeeBean> beans;
+  final int? selectedId;
+  final ValueChanged<int?> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: TextInputType.numberWithOptions(decimal: allowDecimal),
-      textInputAction: TextInputAction.next,
-      decoration: InputDecoration(labelText: label, suffixText: suffix),
-      validator: validator,
+    final colors = shotColors(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: colors.border),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int>(
+          value: selectedId,
+          isExpanded: true,
+          icon: Icon(Icons.keyboard_arrow_down_rounded, color: colors.textSecondary),
+          dropdownColor: colors.surface,
+          style: Theme.of(context).textTheme.titleSmall,
+          items: [
+            for (final bean in beans)
+              DropdownMenuItem<int>(
+                value: bean.id,
+                child: Text(bean.name),
+              ),
+          ],
+          onChanged: onChanged,
+        ),
+      ),
     );
   }
 }

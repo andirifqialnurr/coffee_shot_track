@@ -20,6 +20,7 @@ class ShotApp extends StatefulWidget {
 class _ShotAppState extends State<ShotApp> {
   late final ShotController _controller =
       widget._controller ?? ShotController();
+  ThemeMode _themeMode = ThemeMode.light;
 
   @override
   void initState() {
@@ -45,8 +46,11 @@ class _ShotAppState extends State<ShotApp> {
       debugShowCheckedModeBanner: false,
       theme: ShotTheme.light(),
       darkTheme: ShotTheme.dark(),
-      themeMode: ThemeMode.system,
-      home: const ShotShell(),
+      themeMode: _themeMode,
+      home: ShotShell(
+        themeMode: _themeMode,
+        onThemeModeChanged: (value) => setState(() => _themeMode = value),
+      ),
       localizationsDelegates: const [
         shad.GlobalShadLocalizations.delegate,
       ],

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../app/shot_theme.dart';
 import '../../data/shot_store.dart';
-import '../../domain/shot_metrics.dart' as metrics;
 import '../../shared/widgets/shot_ui.dart';
 import 'shot_form_page.dart';
 
@@ -15,164 +13,118 @@ class ShotDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final store = Get.find<ShotController>();
-    final colors = Theme.of(context).extension<ShotColors>()!;
 
     return Obx(() {
+      final colors = shotColors(context);
       final shot = store.shots.where((item) => item.id == shotId).firstOrNull;
       if (shot == null) {
         return Scaffold(
+          backgroundColor: colors.background,
           appBar: AppBar(title: const Text('Shot')),
-          body: const Center(child: Text('Shot not found.')),
+          body: const EmptyState(
+            icon: Icons.delete_outline_rounded,
+            title: 'Shot sudah dihapus',
+            subtitle: 'Data shot ini tidak lagi tersedia.',
+          ),
         );
       }
       final bean = store.beanById(shot.beanId);
 
       return Scaffold(
+        backgroundColor: colors.background,
         appBar: AppBar(
-          title: Text(bean?.name ?? 'Shot detail'),
+          title: const Text('Shot Detail'),
           actions: [
             ShotIconAction(
               tooltip: shot.isFavorite ? 'Remove Favorite' : 'Set Favorite',
               onPressed: () => store.toggleFavorite(shot),
-              icon: shot.isFavorite ? Icons.star : Icons.star_border,
+              icon: shot.isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
               selected: shot.isFavorite,
-            ),
-            ShotIconAction(
-              tooltip: 'Edit Shot',
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => ShotFormPage(initialShot: shot),
-                  ),
-                );
-              },
-              icon: Icons.edit_outlined,
             ),
           ],
         ),
-        body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              ShotCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+        body: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 130),
+          children: [
+            Text(
+              formatDateTime(shot.brewedAt),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 10),
+            RecipeCard(shot: shot, beanName: bean?.name),
+            const SectionLabel('Rating & Notes'),
+            ShotCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (shot.rating != null)
+                    StarRating(rating: shot.rating!, size: 22)
+                  else
                     Text(
-                      'Recipe',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: colors.mutedText,
-                          ),
+                      'Belum diberi rating',
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
-                    const SizedBox(height: 4),
+                  if ((shot.tastingNotes ?? '').isNotEmpty) ...[
+                    const SizedBox(height: 10),
                     Text(
-                      metrics.formatRatio(shot.doseG, shot.yieldG),
-                      style: Theme.of(context)
-                          .textTheme
-                          .displaySmall
-                          ?.copyWith(fontWeight: FontWeight.w800),
-                    ),
-                    const SizedBox(height: 16),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final columns = constraints.maxWidth < 360 ? 2 : 3;
-                        return GridView.count(
-                          crossAxisCount: columns,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                          childAspectRatio: 1.18,
-                          children: [
-                            MetricTile(
-                              label: 'Dose',
-                              value: _formatNumber(shot.doseG),
-                              unit: 'g',
-                              icon: Icons.scale_outlined,
-                            ),
-                            MetricTile(
-                              label: 'Yield',
-                              value: _formatNumber(shot.yieldG),
-                              unit: 'g',
-                              icon: Icons.water_drop_outlined,
-                            ),
-                            MetricTile(
-                              label: 'Time',
-                              value: shot.extractionSec?.toString() ?? '-',
-                              unit: 'sec',
-                              icon: Icons.timer_outlined,
-                            ),
-                            MetricTile(
-                              label: 'Temp',
-                              value: shot.temperatureC == null
-                                  ? '-'
-                                  : _formatNumber(shot.temperatureC!),
-                              unit: 'C',
-                              icon: Icons.thermostat_outlined,
-                            ),
-                            MetricTile(
-                              label: 'Rating',
-                              value: shot.rating?.toString() ?? '-',
-                              icon: Icons.star_outline,
-                            ),
-                            MetricTile(
-                              label: 'Grind',
-                              value: shot.grindSetting ?? '-',
-                              icon: Icons.tune,
-                            ),
-                          ],
-                        );
-                      },
+                      shot.tastingNotes!,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
-                ),
+                ],
               ),
-              const SizedBox(height: 12),
-              ShotCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Notes',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w800),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(shot.tastingNotes ?? 'No tasting notes.'),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Brewed ${formatShortDate(shot.brewedAt)}',
-                      style: TextStyle(color: colors.mutedText),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              ShotActionButton(
-                onPressed: () {
-                  Navigator.of(context).push(
+            ),
+          ],
+        ),
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 14),
+            decoration: BoxDecoration(
+              color: colors.background,
+              border: Border(top: BorderSide(color: colors.border)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                PrimaryButton(
+                  label: 'Brew Again',
+                  icon: Icons.replay_rounded,
+                  onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (_) => ShotFormPage(
                         initialShot: shot.duplicateForBrewAgain(),
                       ),
                     ),
-                  );
-                },
-                icon: Icons.replay,
-                label: 'Brew Again',
-                primary: true,
-                width: double.infinity,
-              ),
-              const SizedBox(height: 8),
-              ShotActionButton(
-                onPressed: () => _confirmDelete(context),
-                icon: Icons.delete_outline,
-                label: 'Delete Shot',
-                width: double.infinity,
-              ),
-            ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SecondaryButton(
+                        label: 'Edit',
+                        icon: Icons.edit_outlined,
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => ShotFormPage(initialShot: shot),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: SecondaryButton(
+                        label: 'Delete',
+                        icon: Icons.delete_outline_rounded,
+                        danger: true,
+                        onPressed: () => _confirmDelete(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -181,6 +133,7 @@ class ShotDetailPage extends StatelessWidget {
 
   Future<void> _confirmDelete(BuildContext context) async {
     final store = Get.find<ShotController>();
+    final colors = shotColors(context);
     final shot = store.shots.where((item) => item.id == shotId).firstOrNull;
     if (shot == null) {
       return;
@@ -189,16 +142,18 @@ class ShotDetailPage extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete shot?'),
-        content: const Text('This removes only this shot record.'),
+        title: const Text('Hapus shot ini?'),
+        content: const Text(
+          'Tindakan ini tidak dapat dibatalkan. Data shot akan hilang permanen.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
+            child: const Text('Batal'),
           ),
-          FilledButton(
+          TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Delete'),
+            child: Text('Hapus', style: TextStyle(color: colors.danger)),
           ),
         ],
       ),
@@ -210,10 +165,4 @@ class ShotDetailPage extends StatelessWidget {
       }
     }
   }
-}
-
-String _formatNumber(double value) {
-  return value == value.roundToDouble()
-      ? value.toStringAsFixed(0)
-      : value.toStringAsFixed(1);
 }

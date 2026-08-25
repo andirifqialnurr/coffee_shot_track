@@ -23,129 +23,147 @@ class _HistoryPageState extends State<HistoryPage> {
     final store = Get.find<ShotController>();
 
     return Obx(() {
+      final colors = shotColors(context);
       final filtered = store.shots.where(_matchesFilter).toList();
 
-      return ShotPage(
-        title: 'History',
-        subtitle: 'Compare shots by bean, rating, and brew date.',
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ShotCard(
-              child: Column(
-                children: [
-                  DropdownButtonFormField<int?>(
-                    initialValue: _beanId,
-                    decoration: const InputDecoration(
-                      labelText: 'Bean filter',
-                      prefixIcon: Icon(Icons.coffee_outlined),
+      return Scaffold(
+        backgroundColor: colors.background,
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'History',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
                     ),
-                    items: [
-                      const DropdownMenuItem<int?>(
-                        value: null,
-                        child: Text('All beans'),
-                      ),
-                      for (final bean in store.beans)
-                        DropdownMenuItem<int?>(
-                          value: bean.id,
-                          child: Text(bean.name),
-                        ),
-                    ],
-                    onChanged: (value) => setState(() => _beanId = value),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownButtonFormField<int?>(
-                          initialValue: _rating,
-                          decoration: const InputDecoration(
-                            labelText: 'Rating',
-                            prefixIcon: Icon(Icons.star_outline),
-                          ),
-                          items: const [
-                            DropdownMenuItem<int?>(
-                              value: null,
-                              child: Text('Any'),
-                            ),
-                            DropdownMenuItem(value: 5, child: Text('5')),
-                            DropdownMenuItem(value: 4, child: Text('4+')),
-                            DropdownMenuItem(value: 3, child: Text('3+')),
-                          ],
-                          onChanged: (value) => setState(() => _rating = value),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: ShotActionButton(
-                          onPressed: () async {
-                            final picked = await showDatePicker(
-                              context: context,
-                              firstDate: DateTime(2020),
-                              lastDate: DateTime.now().add(
-                                const Duration(days: 1),
-                              ),
-                              initialDate: _date ?? DateTime.now(),
-                            );
-                            if (picked != null) {
-                              setState(() => _date = picked);
-                            }
-                          },
-                          icon: Icons.calendar_today_outlined,
-                          label:
-                              _date == null ? 'Any date' : formatShortDate(_date!),
-                          width: double.infinity,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ShotActionButton(
+                    ShotIconAction(
+                      tooltip: 'Date filter',
+                      icon: Icons.calendar_today_outlined,
+                      onPressed: () => _pickDate(context),
+                    ),
+                    ShotIconAction(
+                      tooltip: 'Clear filters',
+                      icon: Icons.filter_alt_off_outlined,
                       onPressed: () => setState(() {
                         _beanId = null;
                         _rating = null;
                         _date = null;
                       }),
-                      icon: Icons.filter_alt_off_outlined,
-                      label: 'Clear filters',
-                      width: double.infinity,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 16),
-            if (store.shots.isEmpty)
-              const EmptyState(
-                icon: Icons.history_outlined,
-                title: 'No shots yet',
-                message: 'Saved shots will appear in chronological order.',
-              )
-            else if (filtered.isEmpty)
-              const EmptyState(
-                icon: Icons.search_off_outlined,
-                title: 'No matching shots',
-                message: 'Try a different bean, rating, or date filter.',
-              )
-            else
-              ShotCard(
-                child: Column(
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 40,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: [
-                    for (final shot in filtered)
-                      ShotListTile(
-                        shot: shot,
-                        bean: store.beanById(shot.beanId),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => ShotDetailPage(shotId: shot.id!),
-                            ),
-                          );
-                        },
+                    FilterPill(
+                      label: 'Semua Bean',
+                      selected: _beanId == null,
+                      onTap: () => setState(() => _beanId = null),
+                    ),
+                    const SizedBox(width: 8),
+                    for (final bean in store.beans)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: FilterPill(
+                          label: bean.name,
+                          selected: _beanId == bean.id,
+                          onTap: () => setState(() => _beanId = bean.id),
+                        ),
                       ),
                   ],
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 4),
+                child: SizedBox(
+                  height: 36,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      FilterPill(
+                        label: 'Semua Rating',
+                        selected: _rating == null,
+                        onTap: () => setState(() => _rating = null),
+                      ),
+                      const SizedBox(width: 8),
+                      for (var rating = 5; rating >= 1; rating--)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: FilterPill(
+                            label: '$rating star',
+                            selected: _rating == rating,
+                            onTap: () => setState(() => _rating = rating),
+                          ),
+                        ),
+                      if (_date != null)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 2),
+                          child: FilterPill(
+                            label: formatShortDate(_date!),
+                            selected: true,
+                            icon: Icons.calendar_today_outlined,
+                            onTap: () => setState(() => _date = null),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            if (store.shots.isEmpty)
+              const SliverToBoxAdapter(
+                child: EmptyState(
+                  icon: Icons.history_rounded,
+                  title: 'Belum ada riwayat',
+                  subtitle: 'Shot yang Anda catat akan muncul di sini.',
+                ),
+              )
+            else if (filtered.isEmpty)
+              SliverToBoxAdapter(
+                child: EmptyState(
+                  icon: Icons.search_off_outlined,
+                  title: 'No matching shots',
+                  subtitle: 'Try a different bean, rating, or date filter.',
+                  ctaLabel: 'Clear filters',
+                  onCta: () => setState(() {
+                    _beanId = null;
+                    _rating = null;
+                    _date = null;
+                  }),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 100),
+                sliver: SliverList.separated(
+                  itemCount: filtered.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    final shot = filtered[index];
+                    return ShotRow(
+                      shot: shot,
+                      beanName: store.beanById(shot.beanId)?.name ?? '-',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => ShotDetailPage(shotId: shot.id!),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
           ],
@@ -154,11 +172,23 @@ class _HistoryPageState extends State<HistoryPage> {
     });
   }
 
+  Future<void> _pickDate(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now().add(const Duration(days: 1)),
+      initialDate: _date ?? DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() => _date = picked);
+    }
+  }
+
   bool _matchesFilter(EspressoShot shot) {
     if (_beanId != null && shot.beanId != _beanId) {
       return false;
     }
-    if (_rating != null && (shot.rating ?? 0) < _rating!) {
+    if (_rating != null && shot.rating != _rating) {
       return false;
     }
     if (_date != null &&
