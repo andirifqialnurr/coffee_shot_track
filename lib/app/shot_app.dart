@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../data/shot_store.dart';
 import '../features/shell/shot_shell.dart';
@@ -35,7 +36,7 @@ class _ShotAppState extends State<ShotApp> {
   Widget build(BuildContext context) {
     return ShotScope(
       store: _store,
-      child: MaterialApp(
+      child: GetMaterialApp(
         title: 'Shot',
         theme: ShotTheme.light(),
         darkTheme: ShotTheme.dark(),

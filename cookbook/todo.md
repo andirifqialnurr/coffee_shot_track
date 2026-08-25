@@ -68,13 +68,13 @@
 
 ### Batch 7.1 - Dependency and App Bootstrap
 
-- [ ] Add `get` dependency to `pubspec.yaml`.
-- [ ] Replace `MaterialApp` with `GetMaterialApp` in `ShotApp`.
+- [x] Add `get` dependency to `pubspec.yaml`.
+- [x] Replace `MaterialApp` with `GetMaterialApp` in `ShotApp`.
 - [ ] Add an app-level GetX binding, for example `ShotBinding`, to register the state controller.
 - [ ] Keep `WidgetsFlutterBinding.ensureInitialized()` in `main.dart`.
-- [ ] Run `flutter pub get`.
-- [ ] Run `flutter analyze`.
-- [ ] Commit and push 7.1a: dependency and `GetMaterialApp` bootstrap.
+- [x] Run `flutter pub get`.
+- [x] Run `flutter analyze`.
+- [x] Commit and push 7.1a: dependency and `GetMaterialApp` bootstrap.
 - [ ] Commit and push 7.1b: app binding registration and bootstrap validation.
 
 ### Batch 7.2 - Controller Boundary
