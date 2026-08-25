@@ -7,8 +7,8 @@ import 'shot_binding.dart';
 import 'shot_theme.dart';
 
 class ShotApp extends StatefulWidget {
-  const ShotApp({super.key, ShotController? controller, ShotStore? store})
-      : _controller = controller ?? store;
+  const ShotApp({super.key, ShotController? controller})
+      : _controller = controller;
 
   final ShotController? _controller;
 

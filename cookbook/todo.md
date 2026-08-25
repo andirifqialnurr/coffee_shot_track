@@ -61,10 +61,10 @@
 
 ### Commit Policy for Task 7
 
-- [ ] Every Batch 7.x must be split into at least 2 meaningful commits when it contains more than 3 implementation checklist items.
-- [ ] Each sub-batch commit must be pushed before continuing to the next sub-batch.
-- [ ] Validation-only or documentation-only sub-batches may be one commit if they do not include behavior changes.
-- [ ] Commit messages must describe the sub-batch scope, not only the parent batch number.
+- [x] Every Batch 7.x must be split into at least 2 meaningful commits when it contains more than 3 implementation checklist items.
+- [x] Each sub-batch commit must be pushed before continuing to the next sub-batch.
+- [x] Validation-only or documentation-only sub-batches may be one commit if they do not include behavior changes.
+- [x] Commit messages must describe the sub-batch scope, not only the parent batch number.
 
 ### Batch 7.1 - Dependency and App Bootstrap
 
@@ -118,10 +118,10 @@
 ### Batch 7.5 - Final Cleanup and Documentation
 
 - [x] Update `cookbook/architecture.md` so state management is documented as GetX.
-- [ ] Update `cookbook/design-system.md` only if UI interaction behavior changes during migration.
-- [ ] Search repo for leftover `ChangeNotifier`, `InheritedNotifier`, `ShotScope`, and `notifyListeners`.
-- [ ] Verify no runtime network dependency is introduced.
-- [ ] Run final `flutter pub get`, `flutter analyze`, and `flutter test --concurrency=1`.
-- [ ] Mark Task 7 checklist complete after validation.
+- [x] Review `cookbook/design-system.md`; no UI interaction behavior change required a design-system edit.
+- [x] Search repo for leftover `ChangeNotifier`, `InheritedNotifier`, `ShotScope`, and `notifyListeners`.
+- [x] Verify no runtime network dependency is introduced.
+- [x] Run final `flutter pub get`, `flutter analyze`, and `flutter test --concurrency=1`.
+- [x] Mark Task 7 checklist complete after validation.
 - [x] Commit and push 7.5a: documentation updates.
-- [ ] Commit and push 7.5b: final cleanup, checklist completion, and validation evidence.
+- [x] Commit and push 7.5b: final cleanup, checklist completion, and validation evidence.

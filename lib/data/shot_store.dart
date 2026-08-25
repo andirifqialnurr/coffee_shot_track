@@ -6,8 +6,6 @@ import '../domain/espresso_shot.dart';
 import '../domain/shot_metrics.dart' as metrics;
 import 'shot_database.dart';
 
-typedef ShotStore = ShotController;
-
 class ShotController extends GetxController {
   ShotController({ShotDatabase? database})
       : _database = database ?? ShotDatabase.instance,
