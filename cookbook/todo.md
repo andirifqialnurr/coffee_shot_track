@@ -79,14 +79,14 @@
 
 ### Batch 7.2 - Controller Boundary
 
-- [ ] Convert state ownership from `ShotStore extends ChangeNotifier` to a GetX controller, for example `ShotController extends GetxController`.
-- [ ] Replace `_isLoading`, `_errorMessage`, `_beans`, and `_shots` with GetX reactive state (`RxBool`, `RxnString`, `RxList<CoffeeBean>`, `RxList<EspressoShot>`).
+- [x] Convert state ownership from `ShotStore extends ChangeNotifier` to a GetX controller, for example `ShotController extends GetxController`.
+- [x] Replace `_isLoading`, `_errorMessage`, `_beans`, and `_shots` with GetX reactive state (`RxBool`, `RxnString`, `RxList<CoffeeBean>`, `RxList<EspressoShot>`).
 - [ ] Move initial loading into `onInit()` or an explicit bootstrap method that tests can bypass.
 - [ ] Preserve current public actions: `load`, `refresh`, `addBean`, `saveBean`, `markBeanFinished`, `deleteBeanOrArchive`, `addShot`, `saveShot`, `deleteShot`, and `toggleFavorite`.
 - [ ] Preserve derived getters: active beans, recent shots, last shot, total shots, average rating, most-used bean, active/recent bean, shots by bean, best shot by bean.
 - [ ] Keep SQLite persistence in `ShotDatabase`; do not replace persistence with GetX.
 - [ ] Run focused store/controller acceptance tests.
-- [ ] Commit and push 7.2a: introduce GetX controller state and lifecycle.
+- [x] Commit and push 7.2a: introduce GetX controller state and lifecycle.
 - [ ] Commit and push 7.2b: migrate mutations and derived getters.
 - [ ] Commit and push 7.2c: focused controller acceptance tests.
 

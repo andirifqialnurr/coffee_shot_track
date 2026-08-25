@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../domain/coffee_bean.dart';
@@ -6,27 +6,35 @@ import '../domain/espresso_shot.dart';
 import '../domain/shot_metrics.dart' as metrics;
 import 'shot_database.dart';
 
-class ShotStore extends ChangeNotifier {
-  ShotStore({ShotDatabase? database}) : _database = database ?? ShotDatabase.instance;
+typedef ShotStore = ShotController;
 
-  ShotStore.seeded({
+class ShotController extends GetxController {
+  ShotController({ShotDatabase? database})
+      : _database = database ?? ShotDatabase.instance,
+        _isLoading = false.obs,
+        _errorMessage = RxnString(),
+        _beans = <CoffeeBean>[].obs,
+        _shots = <EspressoShot>[].obs;
+
+  ShotController.seeded({
     List<CoffeeBean> beans = const [],
     List<EspressoShot> shots = const [],
     ShotDatabase? database,
   })  : _database = database ?? ShotDatabase.instance,
-        _isLoading = false,
-        _beans = beans,
-        _shots = shots;
+        _isLoading = false.obs,
+        _errorMessage = RxnString(),
+        _beans = beans.toList().obs,
+        _shots = shots.toList().obs;
 
   final ShotDatabase _database;
 
-  bool _isLoading = false;
-  String? _errorMessage;
-  List<CoffeeBean> _beans = const [];
-  List<EspressoShot> _shots = const [];
+  final RxBool _isLoading;
+  final RxnString _errorMessage;
+  final RxList<CoffeeBean> _beans;
+  final RxList<EspressoShot> _shots;
 
-  bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
+  bool get isLoading => _isLoading.value;
+  String? get errorMessage => _errorMessage.value;
   List<CoffeeBean> get beans => List.unmodifiable(_beans);
   List<EspressoShot> get shots => List.unmodifiable(_shots);
 
@@ -57,12 +65,13 @@ class ShotStore extends ChangeNotifier {
 
   Future<void> load() => _runWithState(refresh);
 
+  @override
   Future<void> refresh() async {
     final db = await _database.database;
     final beanRows = await db.query('beans', orderBy: 'updated_at DESC');
     final shotRows = await db.query('shots', orderBy: 'brewed_at DESC');
-    _beans = beanRows.map(CoffeeBean.fromMap).toList();
-    _shots = shotRows.map(EspressoShot.fromMap).toList();
+    _beans.assignAll(beanRows.map(CoffeeBean.fromMap));
+    _shots.assignAll(shotRows.map(EspressoShot.fromMap));
   }
 
   CoffeeBean? beanById(int id) {
@@ -217,28 +226,28 @@ class ShotStore extends ChangeNotifier {
   Future<T> _runMutation<T>(Future<T> Function() action) async {
     try {
       final result = await action();
-      _errorMessage = null;
-      notifyListeners();
+      _errorMessage.value = null;
+      update();
       return result;
     } catch (error) {
-      _errorMessage = error.toString();
-      notifyListeners();
+      _errorMessage.value = error.toString();
+      update();
       rethrow;
     }
   }
 
   Future<void> _runWithState(Future<void> Function() action) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    _isLoading.value = true;
+    _errorMessage.value = null;
+    update();
 
     try {
       await action();
     } catch (error) {
-      _errorMessage = error.toString();
+      _errorMessage.value = error.toString();
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _isLoading.value = false;
+      update();
     }
   }
 }
