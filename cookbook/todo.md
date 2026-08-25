@@ -129,10 +129,11 @@
 
 ## Task 10 - Visible Body Bugfix
 
-- [x] Replace nested `GetMaterialApp`/Shad builder wiring with `ShadApp` as the root UI app.
+- [x] Replace nested `ShadApp`/GetX app wiring with a stable `MaterialApp` root.
+- [x] Inject `ShadTheme` as an inherited theme around the app content.
 - [x] Register `ShotController` in GetX before loading data so `Get.find` and `Obx` remain the state layer.
 - [x] Render only the active shell tab instead of keeping all tab pages in a stack.
-- [x] Keep the shell body expanded so page content receives real viewport constraints.
+- [x] Use `Scaffold(body: Column(...))` with `Expanded` page content and nav below it.
 - [x] Run `flutter analyze`.
 - [x] Run `flutter test --concurrency=1`.
 - [x] Commit and push the visible body fix.

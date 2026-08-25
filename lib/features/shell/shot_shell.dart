@@ -27,30 +27,34 @@ class _ShotShellState extends State<ShotShell> {
     ];
 
     return Scaffold(
-      body: SizedBox.expand(child: pages[_index]),
-      bottomNavigationBar: _ShotNavBar(
-        selectedIndex: _index,
-        onSelected: (value) => setState(() => _index = value),
-        items: const [
-          _ShotNavItemData(
-            icon: Icons.home_outlined,
-            selectedIcon: Icons.home,
-            label: 'Home',
-          ),
-          _ShotNavItemData(
-            icon: Icons.coffee_outlined,
-            selectedIcon: Icons.coffee,
-            label: 'Beans',
-          ),
-          _ShotNavItemData(
-            icon: Icons.add_circle_outline,
-            selectedIcon: Icons.add_circle,
-            label: 'New Shot',
-          ),
-          _ShotNavItemData(
-            icon: Icons.history_outlined,
-            selectedIcon: Icons.history,
-            label: 'History',
+      body: Column(
+        children: [
+          Expanded(child: pages[_index]),
+          _ShotNavBar(
+            selectedIndex: _index,
+            onSelected: (value) => setState(() => _index = value),
+            items: const [
+              _ShotNavItemData(
+                icon: Icons.home_outlined,
+                selectedIcon: Icons.home,
+                label: 'Home',
+              ),
+              _ShotNavItemData(
+                icon: Icons.coffee_outlined,
+                selectedIcon: Icons.coffee,
+                label: 'Beans',
+              ),
+              _ShotNavItemData(
+                icon: Icons.add_circle_outline,
+                selectedIcon: Icons.add_circle,
+                label: 'New Shot',
+              ),
+              _ShotNavItemData(
+                icon: Icons.history_outlined,
+                selectedIcon: Icons.history,
+                label: 'History',
+              ),
+            ],
           ),
         ],
       ),
