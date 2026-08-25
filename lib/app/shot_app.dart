@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/shot_store.dart';
+import '../features/shell/shot_shell.dart';
 import 'shot_scope.dart';
 import 'shot_theme.dart';
 
@@ -39,43 +40,7 @@ class _ShotAppState extends State<ShotApp> {
         theme: ShotTheme.light(),
         darkTheme: ShotTheme.dark(),
         themeMode: ThemeMode.system,
-        home: const ShotBootstrapPage(),
-      ),
-    );
-  }
-}
-
-class ShotBootstrapPage extends StatelessWidget {
-  const ShotBootstrapPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final store = ShotScope.of(context);
-
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: store.isLoading
-              ? const CircularProgressIndicator()
-              : Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Shot',
-                        style: Theme.of(context).textTheme.headlineLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Coffee Shot Tracker is ready.',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ],
-                  ),
-                ),
-        ),
+        home: const ShotShell(),
       ),
     );
   }

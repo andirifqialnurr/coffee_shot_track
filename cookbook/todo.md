@@ -21,14 +21,14 @@
 
 ## Task 3 - MVP UI and Workflows
 
-- [ ] Build custom Material 3 theme from `design-system.md`.
-- [ ] Build bottom navigation shell.
-- [ ] Implement Home with active bean, last shot, Brew Again, New Shot, recent shots, and insights.
-- [ ] Implement Beans list, search, status filter, Add Bean, and Bean Detail.
-- [ ] Implement New/Edit Shot form with live ratio and validation.
-- [ ] Implement Shot Detail with Brew Again, Edit, Delete, and favorite action.
-- [ ] Implement History with bean/rating filters.
-- [ ] Commit and push Task 3 before final validation.
+- [x] Build custom Material 3 theme from `design-system.md`.
+- [x] Build bottom navigation shell.
+- [x] Implement Home with active bean, last shot, Brew Again, New Shot, recent shots, and insights.
+- [x] Implement Beans list, search, status filter, Add Bean, and Bean Detail.
+- [x] Implement New/Edit Shot form with live ratio and validation.
+- [x] Implement Shot Detail with Brew Again, Edit, Delete, and favorite action.
+- [x] Implement History with bean/rating filters.
+- [x] Commit and push Task 3 before final validation.
 
 ## Task 4 - Validation and Polish
 
