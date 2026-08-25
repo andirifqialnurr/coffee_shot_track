@@ -100,7 +100,7 @@
 - [ ] Remove `lib/app/shot_scope.dart` after all usages are gone.
 - [ ] Run `flutter analyze`.
 - [x] Commit and push 7.3a: migrate app/home/shell state reads to GetX.
-- [ ] Commit and push 7.3b: migrate beans/history screens to GetX.
+- [x] Commit and push 7.3b: migrate beans/history screens to GetX.
 - [ ] Commit and push 7.3c: migrate shot form/detail, navigation cleanup, and remove `ShotScope`.
 
 ### Batch 7.4 - Test Harness Migration
