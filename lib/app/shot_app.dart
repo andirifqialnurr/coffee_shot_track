@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../data/shot_store.dart';
 import '../features/shell/shot_shell.dart';
+import 'shot_binding.dart';
 import 'shot_scope.dart';
 import 'shot_theme.dart';
 
@@ -41,6 +42,7 @@ class _ShotAppState extends State<ShotApp> {
         theme: ShotTheme.light(),
         darkTheme: ShotTheme.dark(),
         themeMode: ThemeMode.system,
+        initialBinding: ShotBinding(store: _store),
         home: const ShotShell(),
       ),
     );
