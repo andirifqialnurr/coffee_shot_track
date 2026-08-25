@@ -44,8 +44,15 @@
 
 - [x] Add beans, close app, reopen, and verify beans persist.
 - [x] Add shot, close app, reopen, and verify shots persist.
-- [ ] Change dose/yield and verify ratio updates immediately.
+- [x] Change dose/yield and verify ratio updates immediately.
 - [x] Use Brew Again and verify source shot remains unchanged.
-- [ ] Filter history by bean.
+- [x] Filter history by bean.
 - [x] Archive bean with shots instead of deleting it.
-- [ ] Confirm app remains usable without internet.
+- [x] Confirm app remains usable without internet.
+
+## Acceptance Evidence
+
+- Persistence and restart-read behavior are covered by `test/shot_store_acceptance_test.dart`.
+- Brew Again source immutability and bean archive behavior are covered by `test/shot_store_acceptance_test.dart`.
+- Live ratio update and History bean filtering are covered by `test/workflow_acceptance_test.dart`.
+- Offline readiness is source-verified: app dependencies are local Flutter, `sqflite`, and `path`; no runtime network package or network image usage exists in `lib/`.

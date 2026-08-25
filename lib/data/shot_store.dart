@@ -9,6 +9,15 @@ import 'shot_database.dart';
 class ShotStore extends ChangeNotifier {
   ShotStore({ShotDatabase? database}) : _database = database ?? ShotDatabase.instance;
 
+  ShotStore.seeded({
+    List<CoffeeBean> beans = const [],
+    List<EspressoShot> shots = const [],
+    ShotDatabase? database,
+  })  : _database = database ?? ShotDatabase.instance,
+        _isLoading = false,
+        _beans = beans,
+        _shots = shots;
+
   final ShotDatabase _database;
 
   bool _isLoading = false;
