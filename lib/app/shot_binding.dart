@@ -3,18 +3,18 @@ import 'package:get/get.dart';
 import '../data/shot_store.dart';
 
 class ShotBinding extends Bindings {
-  ShotBinding({ShotStore? store}) : _store = store;
+  ShotBinding({ShotController? controller}) : _controller = controller;
 
-  final ShotStore? _store;
+  final ShotController? _controller;
 
   @override
   void dependencies() {
-    final store = _store;
-    if (store != null) {
-      Get.put<ShotStore>(store, permanent: true);
+    final controller = _controller;
+    if (controller != null) {
+      Get.put<ShotController>(controller, permanent: true);
       return;
     }
 
-    Get.lazyPut<ShotStore>(ShotStore.new, fenix: true);
+    Get.lazyPut<ShotController>(ShotController.new, fenix: true);
   }
 }

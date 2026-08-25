@@ -227,11 +227,9 @@ class ShotController extends GetxController {
     try {
       final result = await action();
       _errorMessage.value = null;
-      update();
       return result;
     } catch (error) {
       _errorMessage.value = error.toString();
-      update();
       rethrow;
     }
   }
@@ -239,7 +237,6 @@ class ShotController extends GetxController {
   Future<void> _runWithState(Future<void> Function() action) async {
     _isLoading.value = true;
     _errorMessage.value = null;
-    update();
 
     try {
       await action();
@@ -247,7 +244,6 @@ class ShotController extends GetxController {
       _errorMessage.value = error.toString();
     } finally {
       _isLoading.value = false;
-      update();
     }
   }
 }
