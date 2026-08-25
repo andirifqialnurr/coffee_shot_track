@@ -138,6 +138,76 @@
 - [x] Run `flutter test --concurrency=1`.
 - [x] Commit and push the visible body fix.
 
+## Task 11 - Full UI Replacement From `main2.dart`
+
+### Current Blocker
+
+- [x] Inspect `main2.dart` as the requested UI reference.
+- [x] Confirm `main2.dart` currently exists but is empty (`0` bytes), so its UI cannot yet be used as the visual source of truth.
+- [ ] Restore or populate `main2.dart` with the intended reference UI before implementation starts.
+
+### Commit Policy for Task 11
+
+- [ ] Split implementation into multiple meaningful commits and push each commit.
+- [ ] Do not keep any old UI surface that conflicts with `main2.dart`.
+- [ ] Preserve GetX state management and SQLite persistence.
+- [ ] Keep light and dark mode support unless `main2.dart` explicitly defines a different theme policy.
+- [ ] Run focused validation after each batch and full validation at the end.
+
+### Batch 11.1 - Reference Extraction and Design-System Rewrite
+
+- [ ] Read the restored `main2.dart` completely.
+- [ ] Extract the exact layout structure, navigation pattern, typography, spacing, colors, radius, shadows, icons, and interaction style from `main2.dart`.
+- [ ] Replace `cookbook/design-system.md` so it uses `main2.dart` as the design source of truth.
+- [ ] Map every existing app screen to the corresponding `main2.dart` visual pattern: Home, Beans, Bean Detail, New/Edit Shot, Shot Detail, and History.
+- [ ] Identify any UI components in current `lib/shared/widgets/shot_ui.dart` that must be deleted instead of restyled.
+- [ ] Commit and push 11.1: `main2.dart` design-system and migration map.
+
+### Batch 11.2 - App Shell and Shared UI Replacement
+
+- [ ] Replace `ShotShell` navigation with the navigation model from `main2.dart`.
+- [ ] Replace `ShotPage`, `ShotCard`, `MetricTile`, `EmptyState`, `BeanStatusChip`, `ShotListTile`, action buttons, filter pills, and icon actions with components matching `main2.dart`.
+- [ ] Remove or rewrite old shadcn/Material helper components that are no longer part of the `main2.dart` visual system.
+- [ ] Ensure page body and bottom navigation both render correctly on mobile dimensions.
+- [ ] Run `flutter analyze`.
+- [ ] Run focused widget smoke tests.
+- [ ] Commit and push 11.2a: shell and shared UI foundation.
+- [ ] Commit and push 11.2b: remove obsolete shared UI leftovers.
+
+### Batch 11.3 - Home and Beans UI Replacement
+
+- [ ] Replace Home page layout to match `main2.dart` exactly, including hero/summary, active bean, last shot, insights, and recent shots.
+- [ ] Replace Beans page search/filter/list layout to match `main2.dart`.
+- [ ] Replace Add Bean sheet/form styling to match `main2.dart`.
+- [ ] Replace Bean Detail layout, actions, best shot, and shot history sections to match `main2.dart`.
+- [ ] Preserve all existing Home and Beans workflows.
+- [ ] Run Home/Beans focused tests or update tests to match the new UI contract.
+- [ ] Commit and push 11.3a: Home replacement.
+- [ ] Commit and push 11.3b: Beans and Bean Detail replacement.
+
+### Batch 11.4 - Shot Form, Shot Detail, and History UI Replacement
+
+- [ ] Replace New/Edit Shot form layout to match `main2.dart`.
+- [ ] Preserve live ratio calculation, validation, save, update, and Brew Again behavior.
+- [ ] Replace Shot Detail layout and actions to match `main2.dart`.
+- [ ] Replace History filter and list layout to match `main2.dart`.
+- [ ] Preserve bean filter, rating filter, date filter, delete, favorite, and navigation behavior.
+- [ ] Run workflow acceptance tests and update assertions only where visual text/structure intentionally changes.
+- [ ] Commit and push 11.4a: Shot form and Shot Detail replacement.
+- [ ] Commit and push 11.4b: History replacement and workflow test updates.
+
+### Batch 11.5 - Light/Dark, Responsiveness, and Final Validation
+
+- [ ] Verify `main2.dart` visual tokens work in both light and dark mode.
+- [ ] Fix any text overflow, uneven left/right spacing, unclear card boundaries, or inconsistent font sizing.
+- [ ] Verify no debug banner is shown.
+- [ ] Run `flutter pub get`.
+- [ ] Run `flutter analyze`.
+- [ ] Run `flutter test --concurrency=1`.
+- [ ] Verify no unintended runtime network usage is introduced.
+- [ ] Verify `HEAD` matches `origin/main` after final push.
+- [ ] Commit and push 11.5: final UI replacement validation.
+
 ## Task 7 - GetX State Management Migration Plan
 
 ### Commit Policy for Task 7
