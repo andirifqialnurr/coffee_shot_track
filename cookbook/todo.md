@@ -99,7 +99,7 @@
 - [ ] Replace navigation that benefits from GetX with `Get.to`, `Get.back`, and `Get.snackbar` only where it reduces boilerplate; keep standard Flutter navigation if it is clearer.
 - [ ] Remove `lib/app/shot_scope.dart` after all usages are gone.
 - [ ] Run `flutter analyze`.
-- [ ] Commit and push 7.3a: migrate app/home/shell state reads to GetX.
+- [x] Commit and push 7.3a: migrate app/home/shell state reads to GetX.
 - [ ] Commit and push 7.3b: migrate beans/history screens to GetX.
 - [ ] Commit and push 7.3c: migrate shot form/detail, navigation cleanup, and remove `ShotScope`.
 
