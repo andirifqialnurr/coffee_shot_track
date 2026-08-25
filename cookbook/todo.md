@@ -117,11 +117,11 @@
 
 ### Batch 7.5 - Final Cleanup and Documentation
 
-- [ ] Update `cookbook/architecture.md` so state management is documented as GetX.
+- [x] Update `cookbook/architecture.md` so state management is documented as GetX.
 - [ ] Update `cookbook/design-system.md` only if UI interaction behavior changes during migration.
 - [ ] Search repo for leftover `ChangeNotifier`, `InheritedNotifier`, `ShotScope`, and `notifyListeners`.
 - [ ] Verify no runtime network dependency is introduced.
 - [ ] Run final `flutter pub get`, `flutter analyze`, and `flutter test --concurrency=1`.
 - [ ] Mark Task 7 checklist complete after validation.
-- [ ] Commit and push 7.5a: documentation updates.
+- [x] Commit and push 7.5a: documentation updates.
 - [ ] Commit and push 7.5b: final cleanup, checklist completion, and validation evidence.

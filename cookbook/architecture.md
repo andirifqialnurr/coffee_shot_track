@@ -13,7 +13,7 @@
 - Flutter stable sesuai repo.
 - `sqflite` untuk database lokal.
 - `path` untuk resolusi path database.
-- State MVP menggunakan `ChangeNotifier` bawaan Flutter agar ringan dan mudah dites.
+- State MVP menggunakan GetX (`GetMaterialApp`, `Bindings`, `GetxController`, `Rx`, dan `Obx`) agar state global beans/shots reactive tanpa menambah layer UI yang berat.
 
 ## Struktur Folder
 
@@ -22,6 +22,7 @@ lib/
   main.dart
   app/
     shot_app.dart
+    shot_binding.dart
     shot_theme.dart
   domain/
     coffee_bean.dart
@@ -55,10 +56,12 @@ Implementasi boleh digabung lebih ringkas jika masih menjaga boundary di atas.
 
 ## Data Flow
 
-1. UI memanggil method pada `ShotStore`.
-2. `ShotStore` menjalankan query/mutation melalui `ShotDatabase`.
-3. `ShotStore` menyimpan snapshot in-memory untuk beans, shots, recent shots, dan insight.
-4. Setelah mutation berhasil, `ShotStore.refresh()` dipanggil dan UI menerima `notifyListeners()`.
+1. `ShotApp` memakai `GetMaterialApp` dan `ShotBinding` untuk mendaftarkan `ShotController`.
+2. UI mengambil controller dengan `Get.find<ShotController>()`.
+3. UI yang membaca beans/shots/loading dibungkus `Obx`.
+4. `ShotController` menjalankan query/mutation melalui `ShotDatabase`.
+5. `ShotController` menyimpan snapshot reactive untuk beans, shots, loading, dan error dengan `RxBool`, `RxnString`, `RxList<CoffeeBean>`, dan `RxList<EspressoShot>`.
+6. Setelah mutation berhasil, `ShotController.refresh()` membaca ulang SQLite dan mengisi ulang Rx list sehingga UI rebuild otomatis.
 
 ## Routing MVP
 
