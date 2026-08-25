@@ -102,14 +102,15 @@ class _HistoryPageState extends State<HistoryPage> {
                   const SizedBox(height: 10),
                   SizedBox(
                     width: double.infinity,
-                    child: TextButton.icon(
+                    child: ShotActionButton(
                       onPressed: () => setState(() {
                         _beanId = null;
                         _rating = null;
                         _date = null;
                       }),
-                      icon: const Icon(Icons.filter_alt_off_outlined),
-                      label: const Text('Clear filters'),
+                      icon: Icons.filter_alt_off_outlined,
+                      label: 'Clear filters',
+                      width: double.infinity,
                     ),
                   ),
                 ],

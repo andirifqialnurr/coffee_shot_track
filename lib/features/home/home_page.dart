@@ -49,10 +49,11 @@ class HomePage extends StatelessWidget {
                 icon: Icons.coffee_maker_outlined,
                 title: 'No beans yet',
                 message: 'Add beans first so every shot has context.',
-                action: FilledButton.icon(
+                action: ShotActionButton(
                   onPressed: () => showBeanFormSheet(context),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Bean'),
+                  icon: Icons.add,
+                  label: 'Add Bean',
+                  primary: true,
                 ),
               )
             else
@@ -126,7 +127,7 @@ class HomePage extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: FilledButton.icon(
+                          child: ShotActionButton(
                             onPressed: lastShot == null
                                 ? null
                                 : () {
@@ -134,21 +135,24 @@ class HomePage extends StatelessWidget {
                                       MaterialPageRoute<void>(
                                         builder: (_) => ShotFormPage(
                                           initialShot:
-                                              lastShot.duplicateForBrewAgain(),
+                                          lastShot.duplicateForBrewAgain(),
                                         ),
                                       ),
                                     );
                                   },
-                            icon: const Icon(Icons.replay),
-                            label: const Text('Brew Again'),
+                            icon: Icons.replay,
+                            label: 'Brew Again',
+                            primary: true,
+                            width: double.infinity,
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: OutlinedButton.icon(
+                          child: ShotActionButton(
                             onPressed: onNewShot,
-                            icon: const Icon(Icons.add),
-                            label: const Text('New Shot'),
+                            icon: Icons.add,
+                            label: 'New Shot',
+                            width: double.infinity,
                           ),
                         ),
                       ],
@@ -163,23 +167,17 @@ class HomePage extends StatelessWidget {
               mostUsedBean: store.mostUsedBean?.name ?? '-',
             ),
             const SizedBox(height: 20),
-            Text(
-              'Recent shots',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w800),
-            ),
+            const ShotSectionHeader(title: 'Recent shots'),
             const SizedBox(height: 8),
             if (store.recentShots.isEmpty)
               EmptyState(
                 icon: Icons.history_outlined,
                 title: 'No shot history',
                 message: 'Your latest 3 shots will show here.',
-                action: OutlinedButton.icon(
+                action: ShotActionButton(
                   onPressed: onNewShot,
-                  icon: const Icon(Icons.add),
-                  label: const Text('New Shot'),
+                  icon: Icons.add,
+                  label: 'New Shot',
                 ),
               )
             else

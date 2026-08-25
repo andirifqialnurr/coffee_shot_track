@@ -91,10 +91,11 @@ class _BeansPageState extends State<BeansPage> {
                 icon: Icons.coffee_outlined,
                 title: 'Start with beans',
                 message: 'Add name, roaster, roast level, and notes.',
-                action: FilledButton.icon(
+                action: ShotActionButton(
                   onPressed: () => showBeanFormSheet(context),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Bean'),
+                  icon: Icons.add,
+                  label: 'Add Bean',
+                  primary: true,
                 ),
               )
             else if (beans.isEmpty)
@@ -102,12 +103,13 @@ class _BeansPageState extends State<BeansPage> {
                 icon: Icons.filter_alt_off_outlined,
                 title: 'No beans match',
                 message: 'Clear search or switch the status filter.',
-                action: OutlinedButton(
+                action: ShotActionButton(
                   onPressed: () => setState(() {
                     _query = '';
                     _filter = null;
                   }),
-                  child: const Text('Clear filter'),
+                  icon: Icons.filter_alt_off_outlined,
+                  label: 'Clear filter',
                 ),
               )
             else
@@ -283,7 +285,7 @@ class _BeanFormSheetState extends State<BeanFormSheet> {
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
-                child: FilledButton.icon(
+                child: ShotActionButton(
                   onPressed: () async {
                     if (!_formKey.currentState!.validate()) {
                       return;
@@ -300,8 +302,10 @@ class _BeanFormSheetState extends State<BeanFormSheet> {
                       Navigator.of(context).pop();
                     }
                   },
-                  icon: const Icon(Icons.add),
-                  label: const Text('Save Bean'),
+                  icon: Icons.add,
+                  label: 'Save Bean',
+                  primary: true,
+                  width: double.infinity,
                 ),
               ),
             ],
@@ -387,7 +391,7 @@ class BeanDetailPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              FilledButton.icon(
+              ShotActionButton(
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
@@ -395,8 +399,10 @@ class BeanDetailPage extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.add),
-                label: const Text('New Shot'),
+                icon: Icons.add,
+                label: 'New Shot',
+                primary: true,
+                width: double.infinity,
               ),
               const SizedBox(height: 16),
               if (bestShot != null)
@@ -423,13 +429,7 @@ class BeanDetailPage extends StatelessWidget {
                   ),
                 ),
               const SizedBox(height: 16),
-              Text(
-                'Shot history',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w800),
-              ),
+              const ShotSectionHeader(title: 'Shot history'),
               const SizedBox(height: 8),
               if (shots.isEmpty)
                 const EmptyState(

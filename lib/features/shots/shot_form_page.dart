@@ -109,10 +109,11 @@ class _ShotFormPageState extends State<ShotFormPage> {
             icon: Icons.coffee_outlined,
             title: 'No beans available',
             message: 'Every shot needs a bean record for comparison.',
-            action: FilledButton.icon(
+            action: ShotActionButton(
               onPressed: () => showBeanFormSheet(context),
-              icon: const Icon(Icons.add),
-              label: const Text('Add Bean'),
+              icon: Icons.add,
+              label: 'Add Bean',
+              primary: true,
             ),
           ),
         );
@@ -273,10 +274,12 @@ class _ShotFormPageState extends State<ShotFormPage> {
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
-                child: FilledButton.icon(
+                child: ShotActionButton(
                   onPressed: () => _save(context),
-                  icon: const Icon(Icons.save_outlined),
-                  label: Text(_isEditing ? 'Update Shot' : 'Save Shot'),
+                  icon: Icons.save_outlined,
+                  label: _isEditing ? 'Update Shot' : 'Save Shot',
+                  primary: true,
+                  width: double.infinity,
                 ),
               ),
             ],

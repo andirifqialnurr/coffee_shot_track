@@ -82,7 +82,7 @@
 - [x] Keep text readable and stable across narrow screens.
 - [x] Run focused widget tests.
 - [x] Commit and push 8.2a: shared surface and badge reskin.
-- [ ] Commit and push 8.2b: list rows, metric tiles, and empty states.
+- [x] Commit and push 8.2b: list rows, metric tiles, and empty states.
 
 ### Batch 8.3 - Screen-Level Polish
 

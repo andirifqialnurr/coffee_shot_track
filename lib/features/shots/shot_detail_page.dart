@@ -149,7 +149,7 @@ class ShotDetailPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              FilledButton.icon(
+              ShotActionButton(
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
@@ -159,14 +159,17 @@ class ShotDetailPage extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.replay),
-                label: const Text('Brew Again'),
+                icon: Icons.replay,
+                label: 'Brew Again',
+                primary: true,
+                width: double.infinity,
               ),
               const SizedBox(height: 8),
-              OutlinedButton.icon(
+              ShotActionButton(
                 onPressed: () => _confirmDelete(context),
-                icon: const Icon(Icons.delete_outline),
-                label: const Text('Delete Shot'),
+                icon: Icons.delete_outline,
+                label: 'Delete Shot',
+                width: double.infinity,
               ),
             ],
           ),

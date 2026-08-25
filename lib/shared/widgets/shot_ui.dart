@@ -415,12 +415,14 @@ class ShotActionButton extends StatelessWidget {
     required this.icon,
     required this.onPressed,
     this.primary = false,
+    this.width,
   });
 
   final String label;
   final IconData icon;
   final VoidCallback? onPressed;
   final bool primary;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
@@ -431,6 +433,7 @@ class ShotActionButton extends StatelessWidget {
       return shad.ShadButton(
         onPressed: onPressed,
         leading: leading,
+        width: width,
         child: child,
       );
     }
@@ -438,6 +441,7 @@ class ShotActionButton extends StatelessWidget {
     return shad.ShadButton.outline(
       onPressed: onPressed,
       leading: leading,
+      width: width,
       child: child,
     );
   }
