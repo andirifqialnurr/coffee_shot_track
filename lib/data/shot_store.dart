@@ -96,6 +96,7 @@ class ShotStore extends ChangeNotifier {
     );
 
     return _runMutation(() async {
+      _validateBean(bean);
       final db = await _database.database;
       final id = await db.insert('beans', bean.toMap());
       await refresh();
@@ -110,6 +111,7 @@ class ShotStore extends ChangeNotifier {
     }
 
     await _runMutation(() async {
+      _validateBean(bean);
       final db = await _database.database;
       await db.update(
         'beans',
@@ -250,5 +252,11 @@ void _validateShot(EspressoShot shot) {
   final rating = shot.rating;
   if (rating != null && (rating < 1 || rating > 5)) {
     throw ArgumentError('Rating must be between 1 and 5.');
+  }
+}
+
+void _validateBean(CoffeeBean bean) {
+  if (bean.name.trim().isEmpty) {
+    throw ArgumentError('Bean name is required.');
   }
 }

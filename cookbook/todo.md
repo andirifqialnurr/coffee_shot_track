@@ -42,10 +42,10 @@
 
 ## Manual Acceptance Checklist
 
-- [ ] Add beans, close app, reopen, and verify beans persist.
-- [ ] Add shot, close app, reopen, and verify shots persist.
+- [x] Add beans, close app, reopen, and verify beans persist.
+- [x] Add shot, close app, reopen, and verify shots persist.
 - [ ] Change dose/yield and verify ratio updates immediately.
-- [ ] Use Brew Again and verify source shot remains unchanged.
+- [x] Use Brew Again and verify source shot remains unchanged.
 - [ ] Filter history by bean.
-- [ ] Archive bean with shots instead of deleting it.
+- [x] Archive bean with shots instead of deleting it.
 - [ ] Confirm app remains usable without internet.

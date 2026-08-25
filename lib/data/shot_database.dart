@@ -2,10 +2,13 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class ShotDatabase {
-  ShotDatabase._();
+  ShotDatabase._({Future<Database> Function()? opener}) : _opener = opener;
+
+  ShotDatabase.test(Future<Database> Function() opener) : _opener = opener;
 
   static final ShotDatabase instance = ShotDatabase._();
 
+  final Future<Database> Function()? _opener;
   Database? _database;
 
   Future<Database> get database async {
@@ -14,12 +17,26 @@ class ShotDatabase {
       return existing;
     }
 
+    final customOpener = _opener;
+    if (customOpener != null) {
+      final db = await customOpener();
+      _database = db;
+      return db;
+    }
+
     final path = p.join(await getDatabasesPath(), 'shot_tracker.db');
     final db = await openDatabase(
       path,
       version: 1,
-      onCreate: (database, version) async {
-        await database.execute('''
+      onCreate: (database, version) => createSchema(database),
+    );
+
+    _database = db;
+    return db;
+  }
+
+  static Future<void> createSchema(Database database) async {
+    await database.execute('''
           CREATE TABLE beans (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
@@ -35,7 +52,7 @@ class ShotDatabase {
           )
         ''');
 
-        await database.execute('''
+    await database.execute('''
           CREATE TABLE shots (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             bean_id INTEGER NOT NULL,
@@ -54,20 +71,13 @@ class ShotDatabase {
           )
         ''');
 
-        await database.execute(
-          'CREATE INDEX idx_shots_bean_id ON shots(bean_id)',
-        );
-        await database.execute(
-          'CREATE INDEX idx_shots_brewed_at ON shots(brewed_at DESC)',
-        );
-        await database.execute(
-          'CREATE INDEX idx_beans_status ON beans(status)',
-        );
-      },
+    await database.execute(
+      'CREATE INDEX idx_shots_bean_id ON shots(bean_id)',
     );
-
-    _database = db;
-    return db;
+    await database.execute(
+      'CREATE INDEX idx_shots_brewed_at ON shots(brewed_at DESC)',
+    );
+    await database.execute('CREATE INDEX idx_beans_status ON beans(status)');
   }
 
   Future<void> close() async {
