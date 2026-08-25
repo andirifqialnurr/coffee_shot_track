@@ -110,10 +110,10 @@
 - [x] Update widget smoke test to pump `ShotApp` with test controller injection.
 - [x] Update workflow tests for `Obx` rebuilds and GetX navigation.
 - [x] Keep SQLite acceptance tests using temporary FFI database.
-- [ ] Run `flutter test --concurrency=1`.
+- [x] Run `flutter test --concurrency=1`.
 - [x] Commit and push 7.4a: migrate widget test harness and controller injection.
 - [x] Commit and push 7.4b: migrate workflow and SQLite acceptance tests.
-- [ ] Commit and push 7.4c: full sequential test validation fixes.
+- [x] Commit and push 7.4c: full sequential test validation fixes.
 
 ### Batch 7.5 - Final Cleanup and Documentation
 
