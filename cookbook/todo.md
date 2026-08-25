@@ -11,13 +11,13 @@
 
 ## Task 2 - Domain, Persistence, and App State
 
-- [ ] Add dependencies for SQLite local persistence.
-- [ ] Create domain models for beans and espresso shots.
-- [ ] Create ratio/best-shot helpers.
-- [ ] Create SQLite database tables and indexes.
-- [ ] Create `ShotStore` with refresh and CRUD operations.
-- [ ] Replace demo counter bootstrap with `ShotApp`.
-- [ ] Commit and push Task 2 before UI task.
+- [x] Add dependencies for SQLite local persistence.
+- [x] Create domain models for beans and espresso shots.
+- [x] Create ratio/best-shot helpers.
+- [x] Create SQLite database tables and indexes.
+- [x] Create `ShotStore` with refresh and CRUD operations.
+- [x] Replace demo counter bootstrap with `ShotApp`.
+- [x] Commit and push Task 2 before UI task.
 
 ## Task 3 - MVP UI and Workflows
 
