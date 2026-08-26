@@ -36,16 +36,16 @@ Keep the existing warm espresso design system. Do not turn the UI into a generic
 - [x] Build Menus tab using the existing warm espresso card style.
 - [x] Add menu image path support and default placeholder.
 - [x] Run focused persistence and widget tests.
-- [ ] Commit and push Menu master data.
+- [x] Commit and push Menu master data.
 
 ### Batch 12.4 - Cafe Master Data
 
-- [ ] Add `Cafe` domain model.
-- [ ] Add `cafes` SQLite table and seed default `Home`.
-- [ ] Add cafe CRUD/archive behavior in the store/controller.
-- [ ] Build Cafe master screen or entry point from New Order.
-- [ ] Add cafe image path support and default placeholder.
-- [ ] Run focused persistence and widget tests.
+- [x] Add `Cafe` domain model.
+- [x] Add `cafes` SQLite table and seed default `Home`.
+- [x] Add cafe CRUD/archive behavior in the store/controller.
+- [x] Build Cafe master screen or entry point from New Order.
+- [x] Add cafe image path support and default placeholder.
+- [x] Run focused persistence and widget tests.
 - [ ] Commit and push Cafe master data.
 
 ### Batch 12.5 - Order Migration and New Order Form

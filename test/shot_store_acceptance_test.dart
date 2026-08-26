@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:coffee_shot_track/data/shot_database.dart';
 import 'package:coffee_shot_track/data/shot_store.dart';
+import 'package:coffee_shot_track/domain/cafe.dart';
 import 'package:coffee_shot_track/domain/coffee_bean.dart';
 import 'package:coffee_shot_track/domain/coffee_menu.dart';
 import 'package:coffee_shot_track/domain/espresso_shot.dart';
@@ -137,6 +138,30 @@ void main() {
     expect(
       secondSession.menuById(custom.id!)?.status,
       MenuStatus.archived,
+    );
+  });
+
+  test('default and custom cafes persist locally', () async {
+    final firstSession = ShotController(database: database);
+    await firstSession.load();
+
+    expect(firstSession.cafes.map((cafe) => cafe.name), contains('Home'));
+
+    final custom = await firstSession.addCafe(
+      name: 'Kawan Kopi',
+      area: 'Bandung',
+      address: 'Jl. Kopi No. 1',
+    );
+
+    final secondSession = ShotController(database: database);
+    await secondSession.load();
+
+    expect(secondSession.cafes.map((cafe) => cafe.name), contains('Kawan Kopi'));
+
+    await secondSession.archiveCafe(custom);
+    expect(
+      secondSession.cafeById(custom.id!)?.status,
+      CafeStatus.archived,
     );
   });
 }

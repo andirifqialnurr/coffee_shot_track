@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../domain/cafe.dart';
 import '../domain/coffee_bean.dart';
 import '../domain/coffee_menu.dart';
 import '../domain/espresso_shot.dart';
@@ -14,11 +15,13 @@ class ShotController extends GetxController {
         _errorMessage = RxnString(),
         _beans = <CoffeeBean>[].obs,
         _menus = <CoffeeMenu>[].obs,
+        _cafes = <Cafe>[].obs,
         _shots = <EspressoShot>[].obs;
 
   ShotController.seeded({
     List<CoffeeBean> beans = const [],
     List<CoffeeMenu> menus = const [],
+    List<Cafe> cafes = const [],
     List<EspressoShot> shots = const [],
     ShotDatabase? database,
   })  : _database = database ?? ShotDatabase.instance,
@@ -26,6 +29,7 @@ class ShotController extends GetxController {
         _errorMessage = RxnString(),
         _beans = beans.toList().obs,
         _menus = menus.toList().obs,
+        _cafes = cafes.toList().obs,
         _shots = shots.toList().obs;
 
   final ShotDatabase _database;
@@ -34,12 +38,14 @@ class ShotController extends GetxController {
   final RxnString _errorMessage;
   final RxList<CoffeeBean> _beans;
   final RxList<CoffeeMenu> _menus;
+  final RxList<Cafe> _cafes;
   final RxList<EspressoShot> _shots;
 
   bool get isLoading => _isLoading.value;
   String? get errorMessage => _errorMessage.value;
   List<CoffeeBean> get beans => List.unmodifiable(_beans);
   List<CoffeeMenu> get menus => List.unmodifiable(_menus);
+  List<Cafe> get cafes => List.unmodifiable(_cafes);
   List<EspressoShot> get shots => List.unmodifiable(_shots);
 
   List<CoffeeBean> get activeBeans =>
@@ -47,6 +53,9 @@ class ShotController extends GetxController {
 
   List<CoffeeMenu> get activeMenus =>
       _menus.where((menu) => menu.status == MenuStatus.active).toList();
+
+  List<Cafe> get activeCafes =>
+      _cafes.where((cafe) => cafe.status == CafeStatus.active).toList();
 
   List<EspressoShot> get recentShots => _shots.take(3).toList();
 
@@ -77,9 +86,11 @@ class ShotController extends GetxController {
     final db = await _database.database;
     final beanRows = await db.query('beans', orderBy: 'updated_at DESC');
     final menuRows = await db.query('menus', orderBy: 'name COLLATE NOCASE ASC');
+    final cafeRows = await db.query('cafes', orderBy: 'name COLLATE NOCASE ASC');
     final shotRows = await db.query('shots', orderBy: 'brewed_at DESC');
     _beans.assignAll(beanRows.map(CoffeeBean.fromMap));
     _menus.assignAll(menuRows.map(CoffeeMenu.fromMap));
+    _cafes.assignAll(cafeRows.map(Cafe.fromMap));
     _shots.assignAll(shotRows.map(EspressoShot.fromMap));
   }
 
@@ -87,6 +98,15 @@ class ShotController extends GetxController {
     for (final bean in _beans) {
       if (bean.id == id) {
         return bean;
+      }
+    }
+    return null;
+  }
+
+  Cafe? cafeById(int id) {
+    for (final cafe in _cafes) {
+      if (cafe.id == id) {
+        return cafe;
       }
     }
     return null;
@@ -221,6 +241,91 @@ class ShotController extends GetxController {
       }
 
       await db.delete('menus', where: 'id = ?', whereArgs: [id]);
+      await refresh();
+    });
+  }
+
+  Future<Cafe> addCafe({
+    required String name,
+    String? area,
+    String? address,
+    String? notes,
+    String? imagePath,
+  }) async {
+    final now = DateTime.now();
+    final cafe = Cafe(
+      name: name.trim(),
+      area: _blankToNull(area),
+      address: _blankToNull(address),
+      notes: _blankToNull(notes),
+      imagePath: _blankToNull(imagePath),
+      createdAt: now,
+      updatedAt: now,
+    );
+
+    return _runMutation(() async {
+      _validateCafe(cafe);
+      final db = await _database.database;
+      final id = await db.insert('cafes', cafe.toMap());
+      await refresh();
+      return cafe.copyWith(id: id);
+    });
+  }
+
+  Future<void> saveCafe(Cafe cafe) async {
+    final id = cafe.id;
+    if (id == null) {
+      throw ArgumentError('Cafe id is required for update.');
+    }
+
+    await _runMutation(() async {
+      _validateCafe(cafe);
+      final db = await _database.database;
+      await db.update(
+        'cafes',
+        cafe.copyWith(updatedAt: DateTime.now()).toMap(),
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      await refresh();
+    });
+  }
+
+  Future<void> archiveCafe(Cafe cafe) {
+    return saveCafe(cafe.copyWith(status: CafeStatus.archived));
+  }
+
+  Future<void> deleteCafeOrArchive(Cafe cafe) async {
+    final id = cafe.id;
+    if (id == null) {
+      return;
+    }
+
+    await _runMutation(() async {
+      final db = await _database.database;
+      if (await _tableExists(db, 'orders')) {
+        final count = Sqflite.firstIntValue(
+              await db.rawQuery(
+                'SELECT COUNT(*) FROM orders WHERE cafe_id = ?',
+                [id],
+              ),
+            ) ??
+            0;
+        if (count > 0) {
+          await db.update(
+            'cafes',
+            cafe
+                .copyWith(status: CafeStatus.archived, updatedAt: DateTime.now())
+                .toMap(),
+            where: 'id = ?',
+            whereArgs: [id],
+          );
+          await refresh();
+          return;
+        }
+      }
+
+      await db.delete('cafes', where: 'id = ?', whereArgs: [id]);
       await refresh();
     });
   }
@@ -381,6 +486,12 @@ void _validateBean(CoffeeBean bean) {
 void _validateMenu(CoffeeMenu menu) {
   if (menu.name.trim().isEmpty) {
     throw ArgumentError('Menu name is required.');
+  }
+}
+
+void _validateCafe(Cafe cafe) {
+  if (cafe.name.trim().isEmpty) {
+    throw ArgumentError('Cafe name is required.');
   }
 }
 

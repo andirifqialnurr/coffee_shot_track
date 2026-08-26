@@ -7,7 +7,7 @@ class ShotDatabase {
   ShotDatabase.test(Future<Database> Function() opener) : _opener = opener;
 
   static final ShotDatabase instance = ShotDatabase._();
-  static const version = 2;
+  static const version = 3;
 
   final Future<Database> Function()? _opener;
   Database? _database;
@@ -83,6 +83,8 @@ class ShotDatabase {
     await database.execute('CREATE INDEX idx_beans_status ON beans(status)');
     await _createMenusSchema(database);
     await seedDefaultMenus(database);
+    await _createCafesSchema(database);
+    await seedDefaultCafes(database);
   }
 
   static Future<void> upgradeSchema(
@@ -93,6 +95,10 @@ class ShotDatabase {
     if (oldVersion < 2) {
       await _createMenusSchema(database);
       await seedDefaultMenus(database);
+    }
+    if (oldVersion < 3) {
+      await _createCafesSchema(database);
+      await seedDefaultCafes(database);
     }
   }
 
@@ -144,6 +150,42 @@ class ShotDatabase {
         conflictAlgorithm: ConflictAlgorithm.ignore,
       );
     }
+  }
+
+  static Future<void> _createCafesSchema(Database database) async {
+    await database.execute('''
+          CREATE TABLE IF NOT EXISTS cafes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE,
+            area TEXT,
+            address TEXT,
+            notes TEXT,
+            image_path TEXT,
+            status TEXT NOT NULL DEFAULT 'active',
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+          )
+        ''');
+
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_cafes_status ON cafes(status)',
+    );
+  }
+
+  static Future<void> seedDefaultCafes(Database database) async {
+    final now = DateTime.now().toIso8601String();
+    await database.insert(
+      'cafes',
+      {
+        'name': 'Home',
+        'area': 'Personal brew',
+        'notes': 'Default place for coffee made or logged at home.',
+        'status': 'active',
+        'created_at': now,
+        'updated_at': now,
+      },
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
   }
 
   Future<void> close() async {

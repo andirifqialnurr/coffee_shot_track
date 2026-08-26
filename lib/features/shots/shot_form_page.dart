@@ -7,6 +7,7 @@ import '../../domain/espresso_shot.dart';
 import '../../domain/shot_metrics.dart' as metrics;
 import '../../shared/widgets/shot_ui.dart';
 import '../beans/beans_page.dart';
+import '../cafes/cafes_page.dart';
 
 class ShotFormPage extends StatefulWidget {
   const ShotFormPage({
@@ -261,6 +262,15 @@ class _ShotFormPageState extends State<ShotFormPage> {
                     ? 'Brew Again'
                     : 'New Shot',
           ),
+          actions: [
+            ShotIconAction(
+              tooltip: 'Cafes',
+              icon: Icons.storefront_outlined,
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const CafesPage()),
+              ),
+            ),
+          ],
         ),
         body: body,
         bottomNavigationBar: SafeArea(
