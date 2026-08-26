@@ -65,13 +65,13 @@ class _ShotShellState extends State<ShotShell> {
         bottom: false,
         child: pages[_index],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         heroTag: 'global-new-shot',
         onPressed: _openNewShot,
+        tooltip: 'New Shot',
         backgroundColor: colors.primary,
         foregroundColor: colors.onPrimary,
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('New Shot'),
+        child: const Icon(Icons.add_rounded),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: _ShotBottomNav(
@@ -101,14 +101,23 @@ class _ShotBottomNav extends StatelessWidget {
       (Icons.history_rounded, 'History'),
     ];
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(top: BorderSide(color: colors.border)),
-      ),
-      padding: const EdgeInsets.only(top: 6, bottom: 8),
-      child: SafeArea(
-        top: false,
+    return SafeArea(
+      top: false,
+      minimum: const EdgeInsets.fromLTRB(20, 0, 20, 14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: colors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(items.length, (index) {
@@ -119,7 +128,7 @@ class _ShotBottomNav extends StatelessWidget {
                 message: label,
                 child: InkWell(
                   onTap: () => onTap(index),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(16),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 6,
@@ -133,7 +142,7 @@ class _ShotBottomNav extends StatelessWidget {
                           color: selected
                               ? colors.primary
                               : colors.textSecondary,
-                          size: 24,
+                          size: 23,
                         ),
                         const SizedBox(height: 2),
                         Text(
