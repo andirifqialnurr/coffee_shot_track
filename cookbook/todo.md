@@ -99,6 +99,14 @@ Keep the existing warm espresso design system. Do not turn the UI into a generic
 - [x] Run `flutter analyze` and `flutter test --concurrency=1`.
 - [ ] Commit and push Home summary cleanup.
 
+### Batch 12.10 - Compact Home Shortcut Grid
+
+- [x] Lock Home shortcut tiles to a true 4-column horizontal grid.
+- [x] Reduce shortcut tile padding from 6px to 4px.
+- [x] Keep shortcut tiles short so the icon dominates the label.
+- [x] Run `flutter analyze` and `flutter test --concurrency=1`.
+- [ ] Commit and push compact Home shortcut grid.
+
 ## Task 1 - Cookbook Foundation
 
 - [x] Create `cookbook/PRD.md`.

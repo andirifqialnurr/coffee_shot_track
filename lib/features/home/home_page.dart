@@ -341,16 +341,23 @@ class _HomeShortcutGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 4,
-      mainAxisSpacing: 8,
-      crossAxisSpacing: 8,
-      childAspectRatio: 0.92,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        for (final item in items) _HomeShortcutTile(item: item),
-      ],
+    const gap = 8.0;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tileWidth = (constraints.maxWidth - (gap * 3)) / 4;
+        return Wrap(
+          spacing: gap,
+          runSpacing: gap,
+          children: [
+            for (final item in items)
+              SizedBox(
+                width: tileWidth,
+                height: 58,
+                child: _HomeShortcutTile(item: item),
+              ),
+          ],
+        );
+      },
     );
   }
 }
@@ -366,19 +373,19 @@ class _HomeShortcutTile extends StatelessWidget {
 
     return InkWell(
       onTap: item.onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(6),
+        padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: colors.border),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(item.icon, size: 29, color: colors.primary),
-            const SizedBox(height: 6),
+            Icon(item.icon, size: 28, color: colors.primary),
+            const SizedBox(height: 3),
             Text(
               item.label,
               maxLines: 1,
@@ -386,7 +393,7 @@ class _HomeShortcutTile extends StatelessWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: colors.textPrimary,
-                    fontSize: 10,
+                    fontSize: 9.5,
                     fontWeight: FontWeight.w800,
                   ),
             ),
