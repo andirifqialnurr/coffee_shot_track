@@ -19,13 +19,13 @@ Keep the existing warm espresso design system. Do not turn the UI into a generic
 
 ### Batch 12.2 - Home Cleanup
 
-- [ ] Remove the active bean card above the last order section.
-- [ ] Rename `Last Shot` to an order-oriented label such as `Last Orders`.
-- [ ] Show maximum 2 horizontal order cards.
-- [ ] Keep current useful card information while reducing width for horizontal scrolling.
-- [ ] Align `See all` with the section label and route it to History.
-- [ ] Remove the duplicate `Recent Shots` section.
-- [ ] Run `flutter analyze` and `flutter test --concurrency=1`.
+- [x] Remove the active bean card above the last order section.
+- [x] Rename `Last Shot` to an order-oriented label such as `Last Orders`.
+- [x] Show maximum 2 horizontal order cards.
+- [x] Keep current useful card information while reducing width for horizontal scrolling.
+- [x] Align `See all` with the section label and route it to History.
+- [x] Remove the duplicate `Recent Shots` section.
+- [x] Run `flutter analyze` and `flutter test --concurrency=1`.
 - [ ] Commit and push Home cleanup.
 
 ### Batch 12.3 - Menu Master Data

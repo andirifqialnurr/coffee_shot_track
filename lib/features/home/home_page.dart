@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../data/shot_store.dart';
-import '../../domain/coffee_bean.dart';
 import '../../domain/espresso_shot.dart';
 import '../../shared/widgets/shot_ui.dart';
 import '../shots/shot_detail_page.dart';
@@ -33,12 +32,7 @@ class HomePage extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       }
 
-      final activeBean = store.activeOrRecentBean;
-      final lastShot = store.lastShot;
-      final recent = store.recentShots
-          .skip(lastShot == null ? 0 : 1)
-          .take(2)
-          .toList();
+      final lastShots = store.recentShots.take(2).toList();
 
       return ShotPageFrame(
         child: CustomScrollView(
@@ -82,13 +76,12 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-            if (activeBean == null)
+            if (store.beans.isEmpty)
               SliverToBoxAdapter(
                 child: EmptyState(
                   icon: Icons.eco_outlined,
                   title: 'Belum ada beans',
-                  subtitle:
-                      'Tambahkan beans pertama Anda untuk mulai mencatat shot.',
+                  subtitle: 'Tambahkan beans pertama Anda untuk mulai mencatat.',
                   ctaLabel: 'Add Beans',
                   onCta: onShowBeans,
                 ),
@@ -96,52 +89,9 @@ class HomePage extends StatelessWidget {
             else ...[
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-                  child: _ActiveBeanCard(bean: activeBean),
-                ),
-              ),
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: SectionLabel('Last Shot', fontSize: 14),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: lastShot == null
-                      ? EmptyState(
-                          icon: Icons.local_cafe_outlined,
-                          title: 'Belum ada shot',
-                          subtitle:
-                              'Catat shot pertama Anda untuk beans ini.',
-                          ctaLabel: 'New Shot',
-                          onCta: onNewShot,
-                        )
-                      : _HomeShotCard(
-                          shot: lastShot,
-                          beanName: store.beanById(lastShot.beanId)?.name,
-                          onBrewAgain: () => Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => ShotFormPage(
-                                initialShot: lastShot.duplicateForBrewAgain(),
-                              ),
-                            ),
-                          ),
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) =>
-                                  ShotDetailPage(shotId: lastShot.id!),
-                            ),
-                          ),
-                        ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: SectionLabel(
-                    'Recent Shots',
+                    'Last Orders',
                     fontSize: 14,
                     trailing: TextButton(
                       onPressed: onShowHistory,
@@ -160,8 +110,19 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              if (recent.isEmpty)
-                const SliverToBoxAdapter(child: SizedBox.shrink())
+              if (lastShots.isEmpty)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: EmptyState(
+                      icon: Icons.local_cafe_outlined,
+                      title: 'Belum ada order',
+                      subtitle: 'Catat order pertama Anda.',
+                      ctaLabel: 'New Order',
+                      onCta: onNewShot,
+                    ),
+                  ),
+                )
               else
                 SliverToBoxAdapter(
                   child: SizedBox(
@@ -169,17 +130,26 @@ class HomePage extends StatelessWidget {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: recent.length,
+                      itemCount: lastShots.length,
                       separatorBuilder: (context, index) =>
                           const SizedBox(width: 10),
                       itemBuilder: (context, index) {
-                        final shot = recent[index];
+                        final shot = lastShots[index];
                         return SizedBox(
                           width: 272,
                           child: _HomeShotCard(
                             shot: shot,
                             beanName: store.beanById(shot.beanId)?.name,
-                            compact: true,
+                            onBrewAgain: index == 0
+                                ? () => Navigator.of(context).push(
+                                      MaterialPageRoute<void>(
+                                        builder: (_) => ShotFormPage(
+                                          initialShot:
+                                              shot.duplicateForBrewAgain(),
+                                        ),
+                                      ),
+                                    )
+                                : null,
                             onTap: () => Navigator.of(context).push(
                               MaterialPageRoute<void>(
                                 builder: (_) =>
@@ -207,14 +177,12 @@ class _HomeShotCard extends StatelessWidget {
     required this.onTap,
     this.beanName,
     this.onBrewAgain,
-    this.compact = false,
   });
 
   final EspressoShot shot;
   final String? beanName;
   final VoidCallback onTap;
   final VoidCallback? onBrewAgain;
-  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -226,7 +194,7 @@ class _HomeShotCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.all(compact ? 14 : 16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(16),
@@ -258,7 +226,7 @@ class _HomeShotCard extends StatelessWidget {
                   ),
                 ),
                 if (shot.rating != null)
-                  StarRating(rating: shot.rating!, size: compact ? 12 : 13),
+                  StarRating(rating: shot.rating!, size: 13),
               ],
             ),
             const SizedBox(height: 12),
@@ -285,7 +253,7 @@ class _HomeShotCard extends StatelessWidget {
                     formatSpacedRatio(shot.doseG, shot.yieldG),
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: colors.primary,
-                          fontSize: compact ? 12 : 13,
+                          fontSize: 13,
                           fontWeight: FontWeight.w800,
                         ),
                   ),
@@ -338,7 +306,7 @@ class _HomeShotCard extends StatelessWidget {
                   ),
               ],
             ),
-            if (!compact && notes != null && notes.isNotEmpty) ...[
+            if (notes != null && notes.isNotEmpty) ...[
               const SizedBox(height: 10),
               Text(
                 notes,
@@ -388,79 +356,6 @@ class _ShotValue extends StatelessWidget {
               ),
         ),
       ],
-    );
-  }
-}
-
-class _ActiveBeanCard extends StatelessWidget {
-  const _ActiveBeanCard({required this.bean});
-
-  final CoffeeBean bean;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = shotColors(context);
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [colors.primary, colors.primary.withValues(alpha: 0.85)],
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              color: colors.onPrimary.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(Icons.eco_rounded, color: colors.onPrimary),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Sedang diseduh',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: colors.onPrimary.withValues(alpha: 0.75),
-                        fontWeight: FontWeight.w500,
-                      ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  bean.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: colors.onPrimary,
-                        fontWeight: FontWeight.w800,
-                      ),
-                ),
-                if (bean.roaster != null)
-                  Text(
-                    bean.roaster!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: colors.onPrimary.withValues(alpha: 0.8),
-                        ),
-                  ),
-              ],
-            ),
-          ),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: colors.onPrimary.withValues(alpha: 0.8),
-          ),
-        ],
-      ),
     );
   }
 }
