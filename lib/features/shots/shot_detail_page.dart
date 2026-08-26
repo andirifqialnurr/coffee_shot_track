@@ -88,7 +88,7 @@ class ShotDetailPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 PrimaryButton(
-                  label: 'Brew Again',
+                  label: 'Order Again',
                   icon: Icons.replay_rounded,
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(

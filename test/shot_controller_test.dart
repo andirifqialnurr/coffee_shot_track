@@ -2,6 +2,7 @@ import 'package:coffee_shot_track/data/shot_store.dart';
 import 'package:coffee_shot_track/domain/cafe.dart';
 import 'package:coffee_shot_track/domain/coffee_bean.dart';
 import 'package:coffee_shot_track/domain/coffee_menu.dart';
+import 'package:coffee_shot_track/domain/coffee_order.dart';
 import 'package:coffee_shot_track/domain/espresso_shot.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -36,16 +37,27 @@ void main() {
       createdAt: now,
       updatedAt: now,
     );
+    final order = CoffeeOrder(
+      id: 1,
+      menuId: 1,
+      cafeId: 1,
+      beanId: 1,
+      orderedAt: now,
+      createdAt: now,
+      updatedAt: now,
+    );
     final controller = ShotController.seeded(
       beans: [bean],
       menus: [menu],
       cafes: [cafe],
+      orders: [order],
       shots: [shot],
     );
 
     expect(controller.activeBeans.single.name, 'Rwanda Huye');
     expect(controller.activeMenus.single.name, 'Americano');
     expect(controller.activeCafes.single.name, 'Home');
+    expect(controller.lastOrder, order);
     expect(controller.lastShot, shot);
     expect(controller.totalShots, 1);
     expect(controller.averageRating, 5);

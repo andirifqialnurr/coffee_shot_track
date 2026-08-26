@@ -11,11 +11,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Shot', skipOffstage: false), findsOneWidget);
-    expect(find.text('Belum ada beans', skipOffstage: false), findsOneWidget);
+    expect(find.text('Belum ada order', skipOffstage: false), findsOneWidget);
     expect(find.text('Home', skipOffstage: false), findsOneWidget);
     expect(find.text('Beans', skipOffstage: false), findsOneWidget);
     expect(find.text('Menus', skipOffstage: false), findsOneWidget);
-    expect(find.byTooltip('New Shot'), findsOneWidget);
+    expect(find.byTooltip('New Order'), findsOneWidget);
     expect(find.text('New Shot', skipOffstage: false), findsNothing);
     expect(find.text('History', skipOffstage: false), findsOneWidget);
   });

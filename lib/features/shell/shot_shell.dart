@@ -6,8 +6,8 @@ import '../history/history_page.dart';
 import '../home/home_page.dart';
 import '../insights/insights_page.dart';
 import '../menus/menus_page.dart';
+import '../orders/order_form_page.dart';
 import '../settings/settings_page.dart';
-import '../shots/shot_form_page.dart';
 
 class ShotShell extends StatefulWidget {
   const ShotShell({
@@ -32,7 +32,7 @@ class _ShotShellState extends State<ShotShell> {
 
   void _openNewShot() {
     Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => const ShotFormPage()),
+      MaterialPageRoute<void>(builder: (_) => const OrderFormPage()),
     );
   }
 
@@ -73,7 +73,7 @@ class _ShotShellState extends State<ShotShell> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'global-new-shot',
         onPressed: _openNewShot,
-        tooltip: 'New Shot',
+        tooltip: 'New Order',
         backgroundColor: colors.primary,
         foregroundColor: colors.onPrimary,
         child: const Icon(Icons.add_rounded),

@@ -5,6 +5,7 @@ import 'package:coffee_shot_track/data/shot_store.dart';
 import 'package:coffee_shot_track/domain/cafe.dart';
 import 'package:coffee_shot_track/domain/coffee_bean.dart';
 import 'package:coffee_shot_track/domain/coffee_menu.dart';
+import 'package:coffee_shot_track/domain/coffee_order.dart';
 import 'package:coffee_shot_track/domain/espresso_shot.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -163,6 +164,64 @@ void main() {
       secondSession.cafeById(custom.id!)?.status,
       CafeStatus.archived,
     );
+  });
+
+  test('orders require menu and cafe but allow unknown bean', () async {
+    final store = ShotController(database: database);
+    await store.load();
+    final menu = store.menus.firstWhere((item) => item.name == 'Americano');
+    final cafe = store.cafes.firstWhere((item) => item.name == 'Home');
+    final now = DateTime(2026, 8, 26, 12);
+
+    await expectLater(
+      store.addOrder(
+        CoffeeOrder(
+          menuId: 0,
+          cafeId: cafe.id!,
+          orderedAt: now,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      ),
+      throwsA(isA<ArgumentError>()),
+    );
+
+    final order = await store.addOrder(
+      CoffeeOrder(
+        menuId: menu.id!,
+        cafeId: cafe.id!,
+        rating: 4,
+        tastingNotes: 'Clean and sweet',
+        orderedAt: now,
+        createdAt: now,
+        updatedAt: now,
+      ),
+    );
+
+    expect(order.beanId, isNull);
+    expect(store.orders.single.menuId, menu.id);
+    expect(store.orders.single.cafeId, cafe.id);
+  });
+
+  test('legacy shots can be migrated into orders', () async {
+    final store = ShotController(database: database);
+    await store.load();
+    final bean = await store.addBean(name: 'Legacy Bean');
+    final shot = await store.addShot(
+      _shot(beanId: bean.id!, dose: 18, yieldOut: 36, rating: 5),
+    );
+
+    final db = await database.database;
+    await ShotDatabase.migrateLegacyShotsToOrders(db);
+    await store.refresh();
+
+    final migrated = store.orders.singleWhere(
+      (order) => order.legacyShotId == shot.id,
+    );
+    expect(migrated.beanId, bean.id);
+    expect(migrated.ratio, 2);
+    expect(store.menuById(migrated.menuId)?.name, 'Espresso');
+    expect(store.cafeById(migrated.cafeId)?.name, 'Home');
   });
 }
 

@@ -565,7 +565,7 @@ class BeanDetailPage extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
             child: PrimaryButton(
-              label: 'New Shot untuk ${bean.name}',
+              label: 'New Order untuk ${bean.name}',
               icon: Icons.add_rounded,
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(

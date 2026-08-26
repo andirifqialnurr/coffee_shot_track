@@ -46,17 +46,17 @@ Keep the existing warm espresso design system. Do not turn the UI into a generic
 - [x] Build Cafe master screen or entry point from New Order.
 - [x] Add cafe image path support and default placeholder.
 - [x] Run focused persistence and widget tests.
-- [ ] Commit and push Cafe master data.
+- [x] Commit and push Cafe master data.
 
 ### Batch 12.5 - Order Migration and New Order Form
 
-- [ ] Add `CoffeeOrder` domain model.
-- [ ] Migrate or map current `shots` data into `orders` without losing existing records.
-- [ ] Require Menu and Cafe when saving a new order.
-- [ ] Make Bean optional.
-- [ ] Move dose/yield/time/grind/temperature into optional advanced brewing fields.
-- [ ] Rename visible `Brew Again` flow to `Order Again`.
-- [ ] Run migration, persistence, and workflow tests.
+- [x] Add `CoffeeOrder` domain model.
+- [x] Migrate or map current `shots` data into `orders` without losing existing records.
+- [x] Require Menu and Cafe when saving a new order.
+- [x] Make Bean optional.
+- [x] Move dose/yield/time/grind/temperature into optional advanced brewing fields.
+- [x] Rename visible `Brew Again` flow to `Order Again`.
+- [x] Run migration, persistence, and workflow tests.
 - [ ] Commit and push order migration.
 
 ### Batch 12.6 - Image Upload and Placeholder System

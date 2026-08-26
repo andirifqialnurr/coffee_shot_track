@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../data/shot_store.dart';
-import '../../domain/espresso_shot.dart';
+import '../../domain/coffee_order.dart';
 import '../../shared/widgets/shot_ui.dart';
-import '../shots/shot_detail_page.dart';
-import '../shots/shot_form_page.dart';
+import '../orders/order_detail_page.dart';
+import '../orders/order_form_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({
@@ -32,7 +32,7 @@ class HomePage extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       }
 
-      final lastShots = store.recentShots.take(2).toList();
+      final lastOrders = store.recentOrders.take(2).toList();
 
       return ShotPageFrame(
         child: CustomScrollView(
@@ -76,94 +76,86 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-            if (store.beans.isEmpty)
-              SliverToBoxAdapter(
-                child: EmptyState(
-                  icon: Icons.eco_outlined,
-                  title: 'Belum ada beans',
-                  subtitle: 'Tambahkan beans pertama Anda untuk mulai mencatat.',
-                  ctaLabel: 'Add Beans',
-                  onCta: onShowBeans,
-                ),
-              )
-            else ...[
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: SectionLabel(
-                    'Last Orders',
-                    fontSize: 14,
-                    trailing: TextButton(
-                      onPressed: onShowHistory,
-                      style: TextButton.styleFrom(
-                        minimumSize: const Size(48, 28),
-                        padding: EdgeInsets.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        textStyle:
-                            Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                      ),
-                      child: const Text('See all'),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SectionLabel(
+                  'Last Orders',
+                  fontSize: 14,
+                  trailing: TextButton(
+                    onPressed: onShowHistory,
+                    style: TextButton.styleFrom(
+                      minimumSize: const Size(48, 28),
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      textStyle:
+                          Theme.of(context).textTheme.labelSmall?.copyWith(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                              ),
                     ),
+                    child: const Text('See all'),
                   ),
                 ),
               ),
-              if (lastShots.isEmpty)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: EmptyState(
-                      icon: Icons.local_cafe_outlined,
-                      title: 'Belum ada order',
-                      subtitle: 'Catat order pertama Anda.',
-                      ctaLabel: 'New Order',
-                      onCta: onNewShot,
-                    ),
-                  ),
-                )
-              else
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: 188,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: lastShots.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(width: 10),
-                      itemBuilder: (context, index) {
-                        final shot = lastShots[index];
-                        return SizedBox(
-                          width: 272,
-                          child: _HomeShotCard(
-                            shot: shot,
-                            beanName: store.beanById(shot.beanId)?.name,
-                            onBrewAgain: index == 0
-                                ? () => Navigator.of(context).push(
-                                      MaterialPageRoute<void>(
-                                        builder: (_) => ShotFormPage(
-                                          initialShot:
-                                              shot.duplicateForBrewAgain(),
-                                        ),
-                                      ),
-                                    )
-                                : null,
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (_) =>
-                                    ShotDetailPage(shotId: shot.id!),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+            ),
+            if (lastOrders.isEmpty)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: EmptyState(
+                    icon: Icons.local_cafe_outlined,
+                    title: 'Belum ada order',
+                    subtitle: 'Catat menu kopi pertama Anda.',
+                    ctaLabel: 'New Order',
+                    onCta: onNewShot,
                   ),
                 ),
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
-            ],
+              )
+            else
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 214,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: lastOrders.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 10),
+                    itemBuilder: (context, index) {
+                      final order = lastOrders[index];
+                      return SizedBox(
+                        width: 274,
+                        child: _HomeOrderCard(
+                          order: order,
+                          menuName: store.menuById(order.menuId)?.name ?? '-',
+                          cafeName: store.cafeById(order.cafeId)?.name ?? '-',
+                          beanName: order.beanId == null
+                              ? null
+                              : store.beanById(order.beanId!)?.name,
+                            onOrderAgain: index == 0
+                              ? () => Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => OrderFormPage(
+                                        initialOrder:
+                                            order.duplicateForOrderAgain(),
+                                      ),
+                                    ),
+                                  )
+                              : null,
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) =>
+                                  OrderDetailPage(orderId: order.id!),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
         ),
       );
@@ -171,30 +163,35 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class _HomeShotCard extends StatelessWidget {
-  const _HomeShotCard({
-    required this.shot,
+class _HomeOrderCard extends StatelessWidget {
+  const _HomeOrderCard({
+    required this.order,
+    required this.menuName,
+    required this.cafeName,
     required this.onTap,
     this.beanName,
-    this.onBrewAgain,
+    this.onOrderAgain,
   });
 
-  final EspressoShot shot;
+  final CoffeeOrder order;
+  final String menuName;
+  final String cafeName;
   final String? beanName;
   final VoidCallback onTap;
-  final VoidCallback? onBrewAgain;
+  final VoidCallback? onOrderAgain;
 
   @override
   Widget build(BuildContext context) {
     final colors = shotColors(context);
-    final notes = shot.tastingNotes?.trim();
+    final notes = order.tastingNotes?.trim();
+    final ratio = order.ratio;
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(16),
@@ -210,89 +207,91 @@ class _HomeShotCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            ShotImagePlaceholder(
+              label: menuName,
+              icon: Icons.local_cafe_outlined,
+              height: 66,
+              radius: 12,
+            ),
+            const SizedBox(height: 10),
             Row(
               children: [
-                Icon(Icons.eco_outlined, size: 14, color: colors.textSecondary),
-                const SizedBox(width: 5),
                 Expanded(
                   child: Text(
-                    beanName ?? 'Unknown bean',
+                    menuName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: colors.textSecondary,
-                          fontSize: 11,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
                         ),
                   ),
                 ),
-                if (shot.rating != null)
-                  StarRating(rating: shot.rating!, size: 13),
+                if (order.rating != null)
+                  StarRating(rating: order.rating!, size: 13),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
+            Text(
+              [
+                cafeName,
+                if (beanName != null) beanName,
+              ].join(' * '),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: colors.textSecondary,
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              formatHumanDate(order.orderedAt),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: colors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            if (notes != null && notes.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(
+                notes,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: colors.textSecondary,
+                      fontStyle: FontStyle.italic,
+                    ),
+              ),
+            ],
+            const Spacer(),
             Row(
               children: [
-                _ShotValue(
-                  label: 'Dose',
-                  value: '${formatNumber(shot.doseG, fixed: true)}g',
-                ),
-                const SizedBox(width: 12),
-                _ShotValue(
-                  label: 'Yield',
-                  value: '${formatNumber(shot.yieldG, fixed: true)}g',
-                ),
-                const Spacer(),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                  decoration: BoxDecoration(
-                    color: colors.surfaceAlt,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    formatSpacedRatio(shot.doseG, shot.yieldG),
+                if (ratio != null)
+                  Text(
+                    '1 : ${ratio.toStringAsFixed(2)}',
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: colors.primary,
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
                         ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Icon(
-                  Icons.timer_outlined,
-                  size: 13,
-                  color: colors.textSecondary,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  shot.extractionSec == null ? '-' : '${shot.extractionSec}s',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: colors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    formatHumanDate(shot.brewedAt),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  )
+                else
+                  Text(
+                    'Coffee order',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: colors.textSecondary,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                         ),
                   ),
-                ),
-                if (onBrewAgain != null)
+                const Spacer(),
+                if (onOrderAgain != null)
                   TextButton.icon(
-                    onPressed: onBrewAgain,
+                    onPressed: onOrderAgain,
                     icon: const Icon(Icons.replay_rounded, size: 14),
-                    label: const Text('Brew Again'),
+                    label: const Text('Order Again'),
                     style: TextButton.styleFrom(
                       minimumSize: const Size(0, 28),
                       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -306,56 +305,9 @@ class _HomeShotCard extends StatelessWidget {
                   ),
               ],
             ),
-            if (notes != null && notes.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              Text(
-                notes,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colors.textSecondary,
-                      fontStyle: FontStyle.italic,
-                    ),
-              ),
-            ],
           ],
         ),
       ),
-    );
-  }
-}
-
-class _ShotValue extends StatelessWidget {
-  const _ShotValue({
-    required this.label,
-    required this.value,
-  });
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = shotColors(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          value,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-              ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: colors.textSecondary,
-                fontSize: 10,
-              ),
-        ),
-      ],
     );
   }
 }

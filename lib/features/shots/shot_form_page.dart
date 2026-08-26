@@ -259,8 +259,8 @@ class _ShotFormPageState extends State<ShotFormPage> {
             _isEditing
                 ? 'Edit Shot'
                 : widget.initialShot != null
-                    ? 'Brew Again'
-                    : 'New Shot',
+                    ? 'Order Again'
+                    : 'New Order',
           ),
           actions: [
             ShotIconAction(

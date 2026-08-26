@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import '../domain/cafe.dart';
 import '../domain/coffee_bean.dart';
 import '../domain/coffee_menu.dart';
+import '../domain/coffee_order.dart';
 import '../domain/espresso_shot.dart';
 import '../domain/shot_metrics.dart' as metrics;
 import 'shot_database.dart';
@@ -16,12 +17,14 @@ class ShotController extends GetxController {
         _beans = <CoffeeBean>[].obs,
         _menus = <CoffeeMenu>[].obs,
         _cafes = <Cafe>[].obs,
+        _orders = <CoffeeOrder>[].obs,
         _shots = <EspressoShot>[].obs;
 
   ShotController.seeded({
     List<CoffeeBean> beans = const [],
     List<CoffeeMenu> menus = const [],
     List<Cafe> cafes = const [],
+    List<CoffeeOrder> orders = const [],
     List<EspressoShot> shots = const [],
     ShotDatabase? database,
   })  : _database = database ?? ShotDatabase.instance,
@@ -30,6 +33,7 @@ class ShotController extends GetxController {
         _beans = beans.toList().obs,
         _menus = menus.toList().obs,
         _cafes = cafes.toList().obs,
+        _orders = orders.toList().obs,
         _shots = shots.toList().obs;
 
   final ShotDatabase _database;
@@ -39,6 +43,7 @@ class ShotController extends GetxController {
   final RxList<CoffeeBean> _beans;
   final RxList<CoffeeMenu> _menus;
   final RxList<Cafe> _cafes;
+  final RxList<CoffeeOrder> _orders;
   final RxList<EspressoShot> _shots;
 
   bool get isLoading => _isLoading.value;
@@ -46,6 +51,7 @@ class ShotController extends GetxController {
   List<CoffeeBean> get beans => List.unmodifiable(_beans);
   List<CoffeeMenu> get menus => List.unmodifiable(_menus);
   List<Cafe> get cafes => List.unmodifiable(_cafes);
+  List<CoffeeOrder> get orders => List.unmodifiable(_orders);
   List<EspressoShot> get shots => List.unmodifiable(_shots);
 
   List<CoffeeBean> get activeBeans =>
@@ -59,7 +65,11 @@ class ShotController extends GetxController {
 
   List<EspressoShot> get recentShots => _shots.take(3).toList();
 
+  List<CoffeeOrder> get recentOrders => _orders.take(3).toList();
+
   EspressoShot? get lastShot => _shots.isEmpty ? null : _shots.first;
+
+  CoffeeOrder? get lastOrder => _orders.isEmpty ? null : _orders.first;
 
   int get totalShots => _shots.length;
 
@@ -87,10 +97,12 @@ class ShotController extends GetxController {
     final beanRows = await db.query('beans', orderBy: 'updated_at DESC');
     final menuRows = await db.query('menus', orderBy: 'name COLLATE NOCASE ASC');
     final cafeRows = await db.query('cafes', orderBy: 'name COLLATE NOCASE ASC');
+    final orderRows = await db.query('orders', orderBy: 'ordered_at DESC');
     final shotRows = await db.query('shots', orderBy: 'brewed_at DESC');
     _beans.assignAll(beanRows.map(CoffeeBean.fromMap));
     _menus.assignAll(menuRows.map(CoffeeMenu.fromMap));
     _cafes.assignAll(cafeRows.map(Cafe.fromMap));
+    _orders.assignAll(orderRows.map(CoffeeOrder.fromMap));
     _shots.assignAll(shotRows.map(EspressoShot.fromMap));
   }
 
@@ -123,6 +135,18 @@ class ShotController extends GetxController {
 
   List<EspressoShot> shotsForBean(int beanId) {
     return _shots.where((shot) => shot.beanId == beanId).toList();
+  }
+
+  List<CoffeeOrder> ordersForBean(int beanId) {
+    return _orders.where((order) => order.beanId == beanId).toList();
+  }
+
+  List<CoffeeOrder> ordersForMenu(int menuId) {
+    return _orders.where((order) => order.menuId == menuId).toList();
+  }
+
+  List<CoffeeOrder> ordersForCafe(int cafeId) {
+    return _orders.where((order) => order.cafeId == cafeId).toList();
   }
 
   EspressoShot? bestShotForBean(int beanId) {
@@ -270,6 +294,52 @@ class ShotController extends GetxController {
       await refresh();
       return cafe.copyWith(id: id);
     });
+  }
+
+  Future<CoffeeOrder> addOrder(CoffeeOrder order) async {
+    return _runMutation(() async {
+      _validateOrder(order);
+      final db = await _database.database;
+      final id = await db.insert('orders', order.toMap());
+      await refresh();
+      return order.copyWith(id: id);
+    });
+  }
+
+  Future<void> saveOrder(CoffeeOrder order) async {
+    final id = order.id;
+    if (id == null) {
+      throw ArgumentError('Order id is required for update.');
+    }
+
+    await _runMutation(() async {
+      _validateOrder(order);
+      final db = await _database.database;
+      await db.update(
+        'orders',
+        order.copyWith(updatedAt: DateTime.now()).toMap(),
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      await refresh();
+    });
+  }
+
+  Future<void> deleteOrder(CoffeeOrder order) async {
+    final id = order.id;
+    if (id == null) {
+      return;
+    }
+
+    await _runMutation(() async {
+      final db = await _database.database;
+      await db.delete('orders', where: 'id = ?', whereArgs: [id]);
+      await refresh();
+    });
+  }
+
+  Future<void> toggleOrderFavorite(CoffeeOrder order) {
+    return saveOrder(order.copyWith(isFavorite: !order.isFavorite));
   }
 
   Future<void> saveCafe(Cafe cafe) async {
@@ -492,6 +562,31 @@ void _validateMenu(CoffeeMenu menu) {
 void _validateCafe(Cafe cafe) {
   if (cafe.name.trim().isEmpty) {
     throw ArgumentError('Cafe name is required.');
+  }
+}
+
+void _validateOrder(CoffeeOrder order) {
+  if (order.menuId <= 0) {
+    throw ArgumentError('Menu is required.');
+  }
+  if (order.cafeId <= 0) {
+    throw ArgumentError('Cafe is required.');
+  }
+  final rating = order.rating;
+  if (rating != null && (rating < 1 || rating > 5)) {
+    throw ArgumentError('Rating must be between 1 and 5.');
+  }
+  final price = order.price;
+  if (price != null && price < 0) {
+    throw ArgumentError('Price cannot be negative.');
+  }
+  final dose = order.doseG;
+  final yield = order.yieldG;
+  if (dose != null && dose <= 0) {
+    throw ArgumentError('Dose must be greater than 0.');
+  }
+  if (yield != null && yield < 0) {
+    throw ArgumentError('Yield cannot be negative.');
   }
 }
 
