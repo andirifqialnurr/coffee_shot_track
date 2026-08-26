@@ -7,7 +7,7 @@ class ShotDatabase {
   ShotDatabase.test(Future<Database> Function() opener) : _opener = opener;
 
   static final ShotDatabase instance = ShotDatabase._();
-  static const version = 4;
+  static const version = 5;
 
   final Future<Database> Function()? _opener;
   Database? _database;
@@ -49,6 +49,7 @@ class ShotDatabase {
             roast_level TEXT,
             roast_date TEXT,
             notes TEXT,
+            image_path TEXT,
             status TEXT NOT NULL DEFAULT 'active',
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL
@@ -107,6 +108,9 @@ class ShotDatabase {
       await seedDefaultCafes(database);
       await _createOrdersSchema(database);
       await migrateLegacyShotsToOrders(database);
+    }
+    if (oldVersion < 5) {
+      await _addColumnIfMissing(database, 'beans', 'image_path', 'TEXT');
     }
   }
 
@@ -300,6 +304,19 @@ class ShotDatabase {
       [table],
     );
     return rows.isNotEmpty;
+  }
+
+  static Future<void> _addColumnIfMissing(
+    Database database,
+    String table,
+    String column,
+    String definition,
+  ) async {
+    final columns = await database.rawQuery('PRAGMA table_info($table)');
+    final exists = columns.any((row) => row['name'] == column);
+    if (!exists) {
+      await database.execute('ALTER TABLE $table ADD COLUMN $column $definition');
+    }
   }
 
   Future<void> close() async {

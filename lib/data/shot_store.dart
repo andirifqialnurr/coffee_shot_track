@@ -161,6 +161,7 @@ class ShotController extends GetxController {
     String? roastLevel,
     DateTime? roastDate,
     String? notes,
+    String? imagePath,
   }) async {
     final now = DateTime.now();
     final bean = CoffeeBean(
@@ -171,6 +172,7 @@ class ShotController extends GetxController {
       roastLevel: _blankToNull(roastLevel),
       roastDate: roastDate,
       notes: _blankToNull(notes),
+      imagePath: _blankToNull(imagePath),
       createdAt: now,
       updatedAt: now,
     );

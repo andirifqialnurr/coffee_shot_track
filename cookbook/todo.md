@@ -57,18 +57,18 @@ Keep the existing warm espresso design system. Do not turn the UI into a generic
 - [x] Move dose/yield/time/grind/temperature into optional advanced brewing fields.
 - [x] Rename visible `Brew Again` flow to `Order Again`.
 - [x] Run migration, persistence, and workflow tests.
-- [ ] Commit and push order migration.
+- [x] Commit and push order migration.
 
 ### Batch 12.6 - Image Upload and Placeholder System
 
-- [ ] Add image picker/local file persistence dependency if needed.
-- [ ] Implement reusable image/placeholder widget for bean, menu, cafe, and order cards.
-- [ ] Add image upload to Add/Edit Bean.
-- [ ] Add image upload to Add/Edit Menu.
-- [ ] Add image upload to Add/Edit Cafe.
-- [ ] Add image upload to New/Edit Order.
-- [ ] Verify all empty image states use designed placeholders.
-- [ ] Run `flutter analyze` and `flutter test --concurrency=1`.
+- [x] Add image picker/local file persistence dependency if needed.
+- [x] Implement reusable image/placeholder widget for bean, menu, cafe, and order cards.
+- [x] Add image upload to Add/Edit Bean.
+- [x] Add image upload to Add/Edit Menu.
+- [x] Add image upload to Add/Edit Cafe.
+- [x] Add image upload to New/Edit Order.
+- [x] Verify all empty image states use designed placeholders.
+- [x] Run `flutter analyze` and `flutter test --concurrency=1`.
 - [ ] Commit and push image support.
 
 ### Batch 12.7 - History and Stats Reframe

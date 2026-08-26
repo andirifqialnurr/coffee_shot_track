@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../data/image_storage.dart';
 import '../../data/shot_store.dart';
 import '../../domain/coffee_bean.dart';
 import '../../shared/widgets/shot_ui.dart';
@@ -186,20 +187,27 @@ class _BeanRow extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
+            ShotImageTile(
+              label: bean.name,
+              icon: Icons.eco_rounded,
+              imagePath: bean.imagePath,
               width: 44,
               height: 44,
-              decoration: BoxDecoration(
-                color: colors.surfaceAlt,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.eco_rounded, color: colors.primary),
+              radius: 12,
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  ShotImageTile(
+                    label: bean.name,
+                    icon: Icons.eco_rounded,
+                    imagePath: bean.imagePath,
+                    height: 118,
+                    radius: 16,
+                  ),
+                  const SizedBox(height: 14),
                   Row(
                     children: [
                       Expanded(
@@ -267,6 +275,7 @@ class _BeanFormSheetState extends State<BeanFormSheet> {
   final _process = TextEditingController();
   final _notes = TextEditingController();
   String _roastLevel = 'Medium';
+  String? _imagePath;
 
   @override
   void dispose() {
@@ -311,6 +320,26 @@ class _BeanFormSheetState extends State<BeanFormSheet> {
                 ),
                 const SizedBox(height: 16),
                 Text('Add Bean', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 14),
+                ShotImageTile(
+                  label: 'Bean photo',
+                  icon: Icons.eco_rounded,
+                  imagePath: _imagePath,
+                  height: 82,
+                  radius: 16,
+                ),
+                const SizedBox(height: 10),
+                SecondaryButton(
+                  label: 'Upload Photo',
+                  icon: Icons.photo_library_outlined,
+                  onPressed: () async {
+                    final path =
+                        await ImageStorage.pickAndStoreImage(prefix: 'bean');
+                    if (path != null && mounted) {
+                      setState(() => _imagePath = path);
+                    }
+                  },
+                ),
                 const SizedBox(height: 16),
                 LabeledTextField(
                   label: 'Nama beans',
@@ -401,6 +430,7 @@ class _BeanFormSheetState extends State<BeanFormSheet> {
                       roastLevel: _roastLevel,
                       roastDate: DateTime.now(),
                       notes: _notes.text,
+                      imagePath: _imagePath,
                     );
                     if (context.mounted) {
                       Navigator.of(context).pop();

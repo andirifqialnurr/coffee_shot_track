@@ -129,6 +129,8 @@ class HomePage extends StatelessWidget {
                         child: _HomeOrderCard(
                           order: order,
                           menuName: store.menuById(order.menuId)?.name ?? '-',
+                          imagePath: order.imagePath ??
+                              store.menuById(order.menuId)?.imagePath,
                           cafeName: store.cafeById(order.cafeId)?.name ?? '-',
                           beanName: order.beanId == null
                               ? null
@@ -167,6 +169,7 @@ class _HomeOrderCard extends StatelessWidget {
   const _HomeOrderCard({
     required this.order,
     required this.menuName,
+    this.imagePath,
     required this.cafeName,
     required this.onTap,
     this.beanName,
@@ -175,6 +178,7 @@ class _HomeOrderCard extends StatelessWidget {
 
   final CoffeeOrder order;
   final String menuName;
+  final String? imagePath;
   final String cafeName;
   final String? beanName;
   final VoidCallback onTap;
@@ -207,9 +211,10 @@ class _HomeOrderCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ShotImagePlaceholder(
+            ShotImageTile(
               label: menuName,
               icon: Icons.local_cafe_outlined,
+              imagePath: imagePath,
               height: 66,
               radius: 12,
             ),

@@ -58,9 +58,10 @@ class OrderDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ShotImagePlaceholder(
+                  ShotImageTile(
                     label: menu?.name ?? 'Coffee order',
                     icon: Icons.local_cafe_outlined,
+                    imagePath: order.imagePath ?? menu?.imagePath,
                     height: 130,
                     radius: 16,
                   ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../data/image_storage.dart';
 import '../../data/shot_store.dart';
 import '../../domain/coffee_menu.dart';
 import '../../shared/widgets/shot_ui.dart';
@@ -195,9 +196,10 @@ class _MenuRow extends StatelessWidget {
       radius: 16,
       child: Row(
         children: [
-          ShotImagePlaceholder(
+          ShotImageTile(
             label: menu.name,
             icon: Icons.local_cafe_outlined,
+            imagePath: menu.imagePath,
             width: 62,
             height: 62,
             radius: 13,
@@ -323,6 +325,7 @@ class _MenuFormSheetState extends State<MenuFormSheet> {
   final _description = TextEditingController();
   final _notes = TextEditingController();
   String _category = 'Espresso-based';
+  String? _imagePath;
 
   @override
   void dispose() {
@@ -366,11 +369,24 @@ class _MenuFormSheetState extends State<MenuFormSheet> {
                 const SizedBox(height: 16),
                 Text('Add Menu', style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 14),
-                ShotImagePlaceholder(
+                ShotImageTile(
                   label: 'Menu photo',
                   icon: Icons.local_cafe_outlined,
+                  imagePath: _imagePath,
                   height: 82,
                   radius: 16,
+                ),
+                const SizedBox(height: 10),
+                SecondaryButton(
+                  label: 'Upload Photo',
+                  icon: Icons.photo_library_outlined,
+                  onPressed: () async {
+                    final path =
+                        await ImageStorage.pickAndStoreImage(prefix: 'menu');
+                    if (path != null && mounted) {
+                      setState(() => _imagePath = path);
+                    }
+                  },
                 ),
                 const SizedBox(height: 16),
                 LabeledTextField(
@@ -437,6 +453,7 @@ class _MenuFormSheetState extends State<MenuFormSheet> {
                       category: _category,
                       description: _description.text,
                       notes: _notes.text,
+                      imagePath: _imagePath,
                     );
                     if (context.mounted) {
                       Navigator.of(context).pop();

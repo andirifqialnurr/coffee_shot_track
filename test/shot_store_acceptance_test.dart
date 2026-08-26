@@ -46,6 +46,7 @@ void main() {
       name: 'Ethiopia Bombe',
       roaster: 'Home Roaster',
       roastLevel: 'Light',
+      imagePath: 'local/bean.jpg',
     );
     await firstSession.addShot(
       _shot(beanId: bean.id!, dose: 18, yieldOut: 42, rating: 5),
@@ -55,6 +56,7 @@ void main() {
     await secondSession.load();
 
     expect(secondSession.beans.single.name, 'Ethiopia Bombe');
+    expect(secondSession.beans.single.imagePath, 'local/bean.jpg');
     expect(secondSession.shots.single.beanId, bean.id);
     expect(secondSession.shots.single.ratio, closeTo(2.333, 0.001));
   });
@@ -125,6 +127,7 @@ void main() {
       name: 'Iced Long Black',
       category: 'Espresso-based',
       description: 'Espresso over cold water and ice',
+      imagePath: 'local/menu.jpg',
     );
 
     final secondSession = ShotController(database: database);
@@ -134,6 +137,7 @@ void main() {
       secondSession.menus.map((menu) => menu.name),
       contains('Iced Long Black'),
     );
+    expect(secondSession.menuById(custom.id!)?.imagePath, 'local/menu.jpg');
 
     await secondSession.archiveMenu(custom);
     expect(
@@ -152,12 +156,14 @@ void main() {
       name: 'Kawan Kopi',
       area: 'Bandung',
       address: 'Jl. Kopi No. 1',
+      imagePath: 'local/cafe.jpg',
     );
 
     final secondSession = ShotController(database: database);
     await secondSession.load();
 
     expect(secondSession.cafes.map((cafe) => cafe.name), contains('Kawan Kopi'));
+    expect(secondSession.cafeById(custom.id!)?.imagePath, 'local/cafe.jpg');
 
     await secondSession.archiveCafe(custom);
     expect(
@@ -190,6 +196,7 @@ void main() {
       CoffeeOrder(
         menuId: menu.id!,
         cafeId: cafe.id!,
+        imagePath: 'local/order.jpg',
         rating: 4,
         tastingNotes: 'Clean and sweet',
         orderedAt: now,
@@ -199,6 +206,7 @@ void main() {
     );
 
     expect(order.beanId, isNull);
+    expect(order.imagePath, 'local/order.jpg');
     expect(store.orders.single.menuId, menu.id);
     expect(store.orders.single.cafeId, cafe.id);
   });

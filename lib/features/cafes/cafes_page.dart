@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../data/image_storage.dart';
 import '../../data/shot_store.dart';
 import '../../domain/cafe.dart';
 import '../../shared/widgets/shot_ui.dart';
@@ -181,9 +182,10 @@ class _CafeRow extends StatelessWidget {
       radius: 16,
       child: Row(
         children: [
-          ShotImagePlaceholder(
+          ShotImageTile(
             label: cafe.name,
             icon: Icons.storefront_outlined,
+            imagePath: cafe.imagePath,
             width: 62,
             height: 62,
             radius: 13,
@@ -309,6 +311,7 @@ class _CafeFormSheetState extends State<CafeFormSheet> {
   final _area = TextEditingController();
   final _address = TextEditingController();
   final _notes = TextEditingController();
+  String? _imagePath;
 
   @override
   void dispose() {
@@ -353,11 +356,24 @@ class _CafeFormSheetState extends State<CafeFormSheet> {
                 const SizedBox(height: 16),
                 Text('Add Cafe', style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 14),
-                ShotImagePlaceholder(
+                ShotImageTile(
                   label: 'Cafe photo',
                   icon: Icons.storefront_outlined,
+                  imagePath: _imagePath,
                   height: 82,
                   radius: 16,
+                ),
+                const SizedBox(height: 10),
+                SecondaryButton(
+                  label: 'Upload Photo',
+                  icon: Icons.photo_library_outlined,
+                  onPressed: () async {
+                    final path =
+                        await ImageStorage.pickAndStoreImage(prefix: 'cafe');
+                    if (path != null && mounted) {
+                      setState(() => _imagePath = path);
+                    }
+                  },
                 ),
                 const SizedBox(height: 16),
                 LabeledTextField(
@@ -405,6 +421,7 @@ class _CafeFormSheetState extends State<CafeFormSheet> {
                       area: _area.text,
                       address: _address.text,
                       notes: _notes.text,
+                      imagePath: _imagePath,
                     );
                     if (context.mounted) {
                       Navigator.of(context).pop();

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -217,6 +219,58 @@ class ShotImagePlaceholder extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ShotImageTile extends StatelessWidget {
+  const ShotImageTile({
+    super.key,
+    required this.label,
+    required this.icon,
+    this.imagePath,
+    this.height = 72,
+    this.width = double.infinity,
+    this.radius = 14,
+  });
+
+  final String label;
+  final IconData icon;
+  final String? imagePath;
+  final double height;
+  final double width;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final path = imagePath;
+    if (path == null || path.trim().isEmpty) {
+      return ShotImagePlaceholder(
+        label: label,
+        icon: icon,
+        height: height,
+        width: width,
+        radius: radius,
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: Image.file(
+          File(path),
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => ShotImagePlaceholder(
+            label: label,
+            icon: icon,
+            height: height,
+            width: width,
+            radius: 0,
           ),
         ),
       ),

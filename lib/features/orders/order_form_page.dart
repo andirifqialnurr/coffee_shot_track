@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../data/image_storage.dart';
 import '../../data/shot_store.dart';
 import '../../domain/cafe.dart';
 import '../../domain/coffee_bean.dart';
@@ -35,6 +36,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
   int? _menuId;
   int? _cafeId;
   int? _beanId;
+  String? _imagePath;
   int _rating = 0;
   bool _showAdvanced = false;
   bool _initialized = false;
@@ -49,6 +51,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
       _menuId = order.menuId;
       _cafeId = order.cafeId;
       _beanId = order.beanId;
+      _imagePath = order.imagePath;
       _price.text = _formatInputNumber(order.price);
       _notes.text = order.tastingNotes ?? '';
       _dose.text = _formatInputNumber(order.doseG);
@@ -171,11 +174,24 @@ class _OrderFormPageState extends State<OrderFormPage> {
               onChanged: (id) => setState(() => _beanId = id),
             ),
             const SectionLabel('Photo'),
-            ShotImagePlaceholder(
+            ShotImageTile(
               label: 'Order photo',
               icon: Icons.photo_camera_outlined,
+              imagePath: _imagePath,
               height: 92,
               radius: 16,
+            ),
+            const SizedBox(height: 10),
+            SecondaryButton(
+              label: 'Upload Photo',
+              icon: Icons.photo_library_outlined,
+              onPressed: () async {
+                final path =
+                    await ImageStorage.pickAndStoreImage(prefix: 'order');
+                if (path != null && mounted) {
+                  setState(() => _imagePath = path);
+                }
+              },
             ),
             const SectionLabel('Price'),
             TextField(
@@ -311,7 +327,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
       menuId: _menuId!,
       cafeId: _cafeId!,
       beanId: _beanId,
-      imagePath: source?.imagePath,
+      imagePath: _imagePath,
       price: _parseDouble(_price.text),
       rating: _rating == 0 ? null : _rating,
       tastingNotes: _blankToNull(_notes.text),
