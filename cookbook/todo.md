@@ -1,5 +1,85 @@
 # TODO
 
+## Current Direction
+
+The completed tasks below describe the original espresso shot MVP and later UI replacement work. The product direction has changed to a coffee menu order tracker: orders require Menu and Cafe, Bean is optional, and espresso brew parameters become optional advanced fields.
+
+Keep the existing warm espresso design system. Do not turn the UI into a generic cafe directory, POS app, or plain Material tracker.
+
+## Task 12 - Coffee Menu Order Tracker Reframe
+
+### Batch 12.1 - Documentation Reframe
+
+- [x] Update root PRD from espresso-only shot tracking to coffee menu order tracking.
+- [x] Update `cookbook/PRD.md` with Menu, Cafe, optional Bean, image upload, placeholders, and order history.
+- [x] Update `cookbook/schema.md` with target `menus`, `cafes`, and `orders` tables.
+- [x] Update `cookbook/architecture.md` with new domain boundaries and migration notes.
+- [x] Update `cookbook/design-system.md` without changing the established warm espresso visual identity.
+- [ ] Commit and push documentation reframe.
+
+### Batch 12.2 - Home Cleanup
+
+- [ ] Remove the active bean card above the last order section.
+- [ ] Rename `Last Shot` to an order-oriented label such as `Last Orders`.
+- [ ] Show maximum 2 horizontal order cards.
+- [ ] Keep current useful card information while reducing width for horizontal scrolling.
+- [ ] Align `See all` with the section label and route it to History.
+- [ ] Remove the duplicate `Recent Shots` section.
+- [ ] Run `flutter analyze` and `flutter test --concurrency=1`.
+- [ ] Commit and push Home cleanup.
+
+### Batch 12.3 - Menu Master Data
+
+- [ ] Add `CoffeeMenu` domain model.
+- [ ] Add `menus` SQLite table and seed starter menus.
+- [ ] Add menu CRUD/archive behavior in the store/controller.
+- [ ] Build Menus tab using the existing warm espresso card style.
+- [ ] Add menu image path support and default placeholder.
+- [ ] Run focused persistence and widget tests.
+- [ ] Commit and push Menu master data.
+
+### Batch 12.4 - Cafe Master Data
+
+- [ ] Add `Cafe` domain model.
+- [ ] Add `cafes` SQLite table and seed default `Home`.
+- [ ] Add cafe CRUD/archive behavior in the store/controller.
+- [ ] Build Cafe master screen or entry point from New Order.
+- [ ] Add cafe image path support and default placeholder.
+- [ ] Run focused persistence and widget tests.
+- [ ] Commit and push Cafe master data.
+
+### Batch 12.5 - Order Migration and New Order Form
+
+- [ ] Add `CoffeeOrder` domain model.
+- [ ] Migrate or map current `shots` data into `orders` without losing existing records.
+- [ ] Require Menu and Cafe when saving a new order.
+- [ ] Make Bean optional.
+- [ ] Move dose/yield/time/grind/temperature into optional advanced brewing fields.
+- [ ] Rename visible `Brew Again` flow to `Order Again`.
+- [ ] Run migration, persistence, and workflow tests.
+- [ ] Commit and push order migration.
+
+### Batch 12.6 - Image Upload and Placeholder System
+
+- [ ] Add image picker/local file persistence dependency if needed.
+- [ ] Implement reusable image/placeholder widget for bean, menu, cafe, and order cards.
+- [ ] Add image upload to Add/Edit Bean.
+- [ ] Add image upload to Add/Edit Menu.
+- [ ] Add image upload to Add/Edit Cafe.
+- [ ] Add image upload to New/Edit Order.
+- [ ] Verify all empty image states use designed placeholders.
+- [ ] Run `flutter analyze` and `flutter test --concurrency=1`.
+- [ ] Commit and push image support.
+
+### Batch 12.7 - History and Stats Reframe
+
+- [ ] Update History filters to menu, cafe, optional bean, rating, and date.
+- [ ] Update History rows/cards to show menu/cafe-first order context.
+- [ ] Update Stats to total orders, average rating, most-ordered menu, most-visited cafe, and trend chart.
+- [ ] Remove duplicate espresso-only metrics from primary UI.
+- [ ] Run full sequential validation.
+- [ ] Commit and push final reframe.
+
 ## Task 1 - Cookbook Foundation
 
 - [x] Create `cookbook/PRD.md`.

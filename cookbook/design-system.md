@@ -2,9 +2,18 @@
 
 ## Source of Truth
 
-Task 11 uses `main2.dart` as the UI source of truth. That file is a single-file Flutter prototype with mock in-memory data, so implementation must copy the visual language and interaction structure while preserving the real app boundaries: GetX state management, SQLite persistence, existing domain models, and current workflow behavior.
+The app keeps the warm espresso visual system introduced by the `main2.dart` UI migration. The domain is now broader than espresso, but the visual identity must not drift into a generic cafe directory, POS app, or plain Material tracker.
 
-The previous neutral shadcn-styled surface is deprecated for this app. `shadcn_ui` may remain available for support utilities, but screens and shared components should match the warm espresso prototype instead of generic shadcn defaults.
+Implementation must preserve the real app boundaries: GetX state management, SQLite persistence, local-first behavior, and reusable shared widgets.
+
+`shadcn_ui` may remain available for support utilities, but screens and shared components should match the custom warm espresso Flutter style instead of generic shadcn defaults.
+
+## Product Tone
+
+- Personal coffee logbook.
+- Warm, compact, precise, and premium.
+- Built for quickly recording what was ordered or brewed.
+- Visual language should feel like a thoughtful coffee journal, not a marketplace, review app, or cafe POS.
 
 ## Color Tokens
 
@@ -41,12 +50,13 @@ Warm cream, white, espresso brown, charcoal, and caramel are the app identity. A
 
 - Font family: Montserrat across Material and Shad theme layers.
 - Page title: 24-26sp, weight 800.
-- Recipe hero number: 30sp, weight 800.
-- Brew ratio: 26-28sp, weight 800.
-- Section label: 12sp, weight 700, uppercase, letter spacing 0.
+- Main card title: 15-18sp, weight 700-800.
+- Section label: 12-14sp, weight 700, uppercase, letter spacing 0.
 - Body: 14sp, weight 400-600 depending on hierarchy.
-- Captions and metadata: 11-13sp.
+- Captions and metadata: 10-13sp.
 - Do not scale font size with viewport width.
+
+Recipe hero numbers are no longer the default focus for every card because the domain is now menu/order tracking. Use large recipe/ratio typography only when advanced brewing data is present.
 
 ## Spacing and Radius
 
@@ -54,33 +64,57 @@ Warm cream, white, espresso brown, charcoal, and caramel are the app identity. A
 - Vertical rhythm: 8-18dp.
 - Inputs and parameter tiles: 14dp radius.
 - Rows, buttons, stat cards, and rating panels: 16dp radius.
-- Bean detail cards: 18dp radius.
-- Recipe cards and active bean cards: 20dp radius.
+- Detail cards: 18dp radius.
+- Featured order/menu cards: 16-20dp radius.
 - Bottom sheets: 24dp top radius with a visible drag handle.
-- Bottom navigation: full-width bottom surface with four icon-led destinations.
+- Bottom navigation: floating pill, not flush to the bottom edge.
+- Global add action: icon-only floating action button.
 
-## Component Map
+## Image and Placeholder Rules
 
-- `ShotShell`: full-screen `Scaffold`, `SafeArea(top: false)`, one active tab body, and custom bottom nav for Home, Beans, New Shot, History.
-- Shared primitives: section labels, star rating display/input, unit chips, status pills, recipe card, hero numbers, empty state, primary/secondary buttons, filter chips, stat cards, and shot rows.
-- Home: greeting, `Shot` title, Insights action, Settings action, active bean gradient card, Last Shot recipe card, tasting notes quote, Brew Again/New Shot actions, and Recent Shots rows.
-- Beans: page title, rounded search field, horizontal status filters, bordered bean rows, status pills, and extended Add Bean action.
-- Add Bean: bottom sheet with drag handle, labeled fields, roast-level chips, and full-width save action.
-- Bean Detail: app bar action menu, top bean info card, metadata chips, Best Shot recipe card, Shot History rows, archive action, and bottom New Shot button.
-- New/Edit Shot: app bar, bean selector, parameter grid, live Brew Ratio panel, star rating input, tasting notes box, and sticky save bar.
-- Shot Detail: date header, RecipeCard, Rating & Notes card, sticky Brew Again/Edit/Delete action area, and themed confirmation dialog.
-- History: page title, horizontal bean filter chips, horizontal rating filter chips, bordered shot rows, and preserved date filtering where already implemented.
-- Insights: real local data for total shots, average rating, most-used bean, and active-bean highlight ranges.
+Bean, menu, cafe, and order surfaces must support images.
+
+When no image is uploaded, use a designed placeholder instead of a plain empty box:
+
+- Warm surfaceAlt or caramel-tinted background.
+- Subtle diagonal/texture/pattern layer.
+- Context icon: bean, menu/drink, cafe/place, or order cup.
+- Optional initial or short name label.
+- Same radius as the containing card image area.
+- Works in light and dark mode.
+
+Do not use remote network images for default placeholders. Placeholder rendering must be local and offline-safe.
+
+## Component Map Target
+
+- `ShotShell`: full-screen `Scaffold`, safe-area-aware body, floating bottom navigation for Home, Beans, Menus, History, and icon-only global add FAB for New Order.
+- Shared primitives: section labels, image/placeholder tile, star rating display/input, unit chips, status pills, order/menu/cafe cards, empty state, primary/secondary buttons, filter chips, stat cards, and compact list rows.
+- Home: greeting, title, settings/stats actions where needed, `Last Orders` horizontal rail with maximum 2 cards, aligned `See all`, and no duplicate recent section.
+- Beans: page title, add action, search field, horizontal status filters, image/placeholder rows, centered status pills, and order count.
+- Menus: page title, add action, menu category filters, image/placeholder cards, and usage count.
+- Cafes: page title, add action, image/placeholder cards, area/address metadata, and visit/order count.
+- New/Edit Order: app bar, menu selector, cafe selector, optional bean selector, optional photo, rating, notes, date/time, and optional advanced brewing section.
+- Order Detail: image/placeholder hero, menu/cafe/bean metadata, rating, notes, date/time, optional price, optional brew parameters, and Order Again/Edit/Delete actions.
+- History: filters by menu, cafe, bean, rating, and date; list rows/cards with image/placeholder and compact metadata.
+- Stats: real local data for total orders, average rating, most-ordered menu, most-visited cafe, and trend chart.
 - Settings: dark-mode switch wired to app theme state.
 
 ## Replacement Rule
 
-Replace conflicting old helpers in `lib/shared/widgets/shot_ui.dart` instead of restyling them piecemeal. In particular, old neutral shadcn cards, badges, metric tiles, dropdown-heavy filters, and centered card-based nav should be removed where they conflict with `main2.dart`.
+Replace conflicting old espresso-only helpers instead of layering new labels on top of them. In particular:
+
+- `Shot` user-facing labels should migrate to `Order` where the screen represents a coffee order.
+- `Brew Again` should migrate to `Order Again`.
+- Ratio/dose/yield UI should move to optional advanced brewing sections.
+- Home should not show an active bean card as the primary context.
+
+Keep file/class names temporarily if that reduces migration risk, but visible copy and data contracts should move toward the new product model.
 
 ## Accessibility and Responsiveness
 
 - Tap targets should stay at least 44dp.
 - Text must remain readable against warm cream and dark charcoal surfaces.
-- Bottom nav labels, bean names, recipe numbers, filter chips, CTA buttons, and parameter tiles must not overflow on 320dp-wide screens.
-- Status cannot rely on color alone; keep visible `Active` / `Finished` labels.
-- Ratio, date, and rating values need visible text context.
+- Bottom nav labels, bean/menu/cafe names, filter chips, CTA buttons, and card metadata must not overflow on 320dp-wide screens.
+- Status cannot rely on color alone; keep visible labels such as `Active`, `Archived`, or `Finished`.
+- Images need semantic context through nearby text; do not rely on image alone.
+- Placeholder visuals must not reduce text contrast.
