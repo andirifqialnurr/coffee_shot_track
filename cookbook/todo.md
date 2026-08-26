@@ -113,6 +113,13 @@ Keep the existing warm espresso design system. Do not turn the UI into a generic
 - [x] Run `flutter analyze` and `flutter test --concurrency=1`.
 - [ ] Commit and push square Home shortcut tiles.
 
+### Batch 12.12 - Fixed Home Shortcut Card Size
+
+- [x] Keep the shortcut layout as 4 columns while making each card a fixed compact square.
+- [x] Let spacing grow between shortcut cards instead of stretching the cards.
+- [x] Run `flutter analyze` and `flutter test --concurrency=1`.
+- [ ] Commit and push fixed Home shortcut sizing.
+
 ## Task 1 - Cookbook Foundation
 
 - [x] Create `cookbook/PRD.md`.

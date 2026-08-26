@@ -341,20 +341,38 @@ class _HomeShortcutGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const gap = 8.0;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final tileWidth = (constraints.maxWidth - (gap * 3)) / 4;
-        return Wrap(
-          spacing: gap,
-          runSpacing: gap,
+        final tileSize = constraints.maxWidth < 300 ? 52.0 : 56.0;
+        final rows = <List<_HomeShortcutItem>>[];
+        for (var index = 0; index < items.length; index += 4) {
+          final end = (index + 4) > items.length ? items.length : index + 4;
+          rows.add(items.sublist(index, end));
+        }
+
+        return Column(
           children: [
-            for (final item in items)
-              SizedBox(
-                width: tileWidth,
-                height: tileWidth,
-                child: _HomeShortcutTile(item: item),
+            for (var rowIndex = 0; rowIndex < rows.length; rowIndex++) ...[
+              if (rowIndex > 0) const SizedBox(height: 10),
+              Row(
+                children: [
+                  for (var column = 0; column < 4; column++)
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: column < rows[rowIndex].length
+                            ? SizedBox.square(
+                                dimension: tileSize,
+                                child: _HomeShortcutTile(
+                                  item: rows[rowIndex][column],
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    ),
+                ],
               ),
+            ],
           ],
         );
       },
