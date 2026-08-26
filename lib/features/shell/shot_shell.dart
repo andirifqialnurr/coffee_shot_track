@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../shared/widgets/shot_ui.dart';
 import '../beans/beans_page.dart';
+import '../cafes/cafes_page.dart';
 import '../history/history_page.dart';
 import '../home/home_page.dart';
 import '../insights/insights_page.dart';
@@ -43,10 +44,14 @@ class _ShotShellState extends State<ShotShell> {
       HomePage(
         onNewShot: _openNewShot,
         onShowHistory: () => _goToTab(3),
-        onShowBeans: () => _goToTab(1),
-        onShowInsights: () {
+        onShowMenus: () {
           Navigator.of(context).push(
-            MaterialPageRoute<void>(builder: (_) => const InsightsPage()),
+            MaterialPageRoute<void>(builder: (_) => const MenusPage()),
+          );
+        },
+        onShowCafes: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const CafesPage()),
           );
         },
         onShowSettings: () {
@@ -61,7 +66,7 @@ class _ShotShellState extends State<ShotShell> {
         },
       ),
       const BeansPage(),
-      const MenusPage(),
+      const InsightsPage(),
       const HistoryPage(),
     ];
 
@@ -102,7 +107,7 @@ class _ShotBottomNav extends StatelessWidget {
     final items = [
       (Icons.coffee_rounded, 'Home'),
       (Icons.eco_outlined, 'Beans'),
-      (Icons.local_cafe_outlined, 'Menus'),
+      (Icons.insights_rounded, 'Stats'),
       (Icons.history_rounded, 'History'),
     ];
 

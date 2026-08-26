@@ -200,14 +200,6 @@ class _BeanRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ShotImageTile(
-                    label: bean.name,
-                    icon: Icons.eco_rounded,
-                    imagePath: bean.imagePath,
-                    height: 118,
-                    radius: 16,
-                  ),
-                  const SizedBox(height: 14),
                   Row(
                     children: [
                       Expanded(

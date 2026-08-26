@@ -12,15 +12,15 @@ class HomePage extends StatelessWidget {
     super.key,
     required this.onNewShot,
     required this.onShowHistory,
-    required this.onShowBeans,
-    required this.onShowInsights,
+    required this.onShowMenus,
+    required this.onShowCafes,
     required this.onShowSettings,
   });
 
   final VoidCallback onNewShot;
   final VoidCallback onShowHistory;
-  final VoidCallback onShowBeans;
-  final VoidCallback onShowInsights;
+  final VoidCallback onShowMenus;
+  final VoidCallback onShowCafes;
   final VoidCallback onShowSettings;
 
   @override
@@ -61,16 +61,36 @@ class HomePage extends StatelessWidget {
                     Row(
                       children: [
                         ShotIconAction(
-                          tooltip: 'Insights',
-                          icon: Icons.insights_rounded,
-                          onPressed: onShowInsights,
-                        ),
-                        ShotIconAction(
                           tooltip: 'Settings',
                           icon: Icons.settings_outlined,
                           onPressed: onShowSettings,
                         ),
                       ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SectionLabel('Master Data', fontSize: 14),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                child: _HomeShortcutGrid(
+                  items: [
+                    _HomeShortcutItem(
+                      label: 'Menus',
+                      icon: Icons.restaurant_menu_rounded,
+                      onTap: onShowMenus,
+                    ),
+                    _HomeShortcutItem(
+                      label: 'Cafes',
+                      icon: Icons.storefront_outlined,
+                      onTap: onShowCafes,
                     ),
                   ],
                 ),
@@ -135,7 +155,7 @@ class HomePage extends StatelessWidget {
                           beanName: order.beanId == null
                               ? null
                               : store.beanById(order.beanId!)?.name,
-                            onOrderAgain: index == 0
+                          onOrderAgain: index == 0
                               ? () => Navigator.of(context).push(
                                     MaterialPageRoute<void>(
                                       builder: (_) => OrderFormPage(
@@ -162,6 +182,81 @@ class HomePage extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+class _HomeShortcutItem {
+  const _HomeShortcutItem({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+}
+
+class _HomeShortcutGrid extends StatelessWidget {
+  const _HomeShortcutGrid({required this.items});
+
+  final List<_HomeShortcutItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisCount: 4,
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 8,
+      childAspectRatio: 0.92,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        for (final item in items) _HomeShortcutTile(item: item),
+      ],
+    );
+  }
+}
+
+class _HomeShortcutTile extends StatelessWidget {
+  const _HomeShortcutTile({required this.item});
+
+  final _HomeShortcutItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = shotColors(context);
+
+    return InkWell(
+      onTap: item.onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: colors.border),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(item.icon, size: 29, color: colors.primary),
+            const SizedBox(height: 6),
+            Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: colors.textPrimary,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

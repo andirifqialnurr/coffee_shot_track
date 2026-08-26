@@ -80,6 +80,15 @@ Keep the existing warm espresso design system. Do not turn the UI into a generic
 - [x] Run full sequential validation.
 - [ ] Commit and push final reframe.
 
+### Batch 12.8 - Home Shortcuts and List Cleanup
+
+- [x] Move `Stats` into the bottom navigation in place of `Menus`.
+- [x] Add compact Home shortcut tiles for `Menus` and `Cafes` using a 4-column grid.
+- [x] Remove duplicate large bean image from the Beans list row.
+- [x] Center the Menus status badge in the row and keep menu descriptions to one line.
+- [x] Run `flutter analyze` and `flutter test --concurrency=1`.
+- [ ] Commit and push Home shortcut cleanup.
+
 ## Task 1 - Cookbook Foundation
 
 - [x] Create `cookbook/PRD.md`.

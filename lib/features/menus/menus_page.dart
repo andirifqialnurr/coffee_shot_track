@@ -219,8 +219,6 @@ class _MenuRow extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    _MenuStatusPill(menu.status),
                   ],
                 ),
                 const SizedBox(height: 4),
@@ -247,6 +245,11 @@ class _MenuRow extends StatelessWidget {
                 ],
               ],
             ),
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 70,
+            child: Center(child: _MenuStatusPill(menu.status)),
           ),
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert_rounded, color: colors.textSecondary),
