@@ -14,7 +14,8 @@ void main() {
     expect(find.text('Belum ada beans', skipOffstage: false), findsOneWidget);
     expect(find.text('Home', skipOffstage: false), findsOneWidget);
     expect(find.text('Beans', skipOffstage: false), findsOneWidget);
-    expect(find.text('New Shot', skipOffstage: false), findsWidgets);
+    expect(find.text('Stats', skipOffstage: false), findsOneWidget);
+    expect(find.text('New Shot', skipOffstage: false), findsOneWidget);
     expect(find.text('History', skipOffstage: false), findsOneWidget);
   });
 }

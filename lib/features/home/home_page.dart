@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../data/shot_store.dart';
 import '../../domain/coffee_bean.dart';
+import '../../domain/espresso_shot.dart';
 import '../../shared/widgets/shot_ui.dart';
 import '../shots/shot_detail_page.dart';
 import '../shots/shot_form_page.dart';
@@ -32,10 +33,12 @@ class HomePage extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       }
 
-      final colors = shotColors(context);
       final activeBean = store.activeOrRecentBean;
       final lastShot = store.lastShot;
-      final recent = store.recentShots;
+      final recent = store.recentShots
+          .skip(lastShot == null ? 0 : 1)
+          .take(2)
+          .toList();
 
       return ShotPageFrame(
         child: CustomScrollView(
@@ -97,7 +100,12 @@ class HomePage extends StatelessWidget {
                   child: _ActiveBeanCard(bean: activeBean),
                 ),
               ),
-              const SliverToBoxAdapter(child: SectionLabel('Last Shot')),
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: SectionLabel('Last Shot', fontSize: 14),
+                ),
+              ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -110,92 +118,78 @@ class HomePage extends StatelessWidget {
                           ctaLabel: 'New Shot',
                           onCta: onNewShot,
                         )
-                      : GestureDetector(
+                      : _HomeShotCard(
+                          shot: lastShot,
+                          beanName: store.beanById(lastShot.beanId)?.name,
+                          onBrewAgain: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => ShotFormPage(
+                                initialShot: lastShot.duplicateForBrewAgain(),
+                              ),
+                            ),
+                          ),
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute<void>(
                               builder: (_) =>
                                   ShotDetailPage(shotId: lastShot.id!),
                             ),
                           ),
-                          child: RecipeCard(
-                            shot: lastShot,
-                            beanName: store.beanById(lastShot.beanId)?.name,
-                          ),
                         ),
                 ),
               ),
-              if ((lastShot?.tastingNotes ?? '').isNotEmpty)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                    child: Text(
-                      '"${lastShot!.tastingNotes}"',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: colors.textSecondary,
-                            fontStyle: FontStyle.italic,
-                          ),
-                    ),
-                  ),
-                ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-                  child: Column(
-                    children: [
-                      PrimaryButton(
-                        label: 'Brew Again',
-                        icon: Icons.replay_rounded,
-                        onPressed: lastShot == null
-                            ? null
-                            : () => Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) => ShotFormPage(
-                                      initialShot:
-                                          lastShot.duplicateForBrewAgain(),
-                                    ),
-                                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: SectionLabel(
+                    'Recent Shots',
+                    fontSize: 14,
+                    trailing: TextButton(
+                      onPressed: onShowHistory,
+                      style: TextButton.styleFrom(
+                        minimumSize: const Size(48, 28),
+                        padding: EdgeInsets.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        textStyle:
+                            Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
                                 ),
                       ),
-                      const SizedBox(height: 10),
-                      SecondaryButton(
-                        label: 'New Shot',
-                        icon: Icons.add_rounded,
-                        onPressed: onNewShot,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: SectionLabel(
-                  'Recent Shots',
-                  trailing: TextButton(
-                    onPressed: onShowHistory,
-                    child: const Text('Lihat semua'),
+                      child: const Text('See all'),
+                    ),
                   ),
                 ),
               ),
               if (recent.isEmpty)
                 const SliverToBoxAdapter(child: SizedBox.shrink())
               else
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  sliver: SliverList.separated(
-                    itemCount: recent.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 10),
-                    itemBuilder: (context, index) {
-                      final shot = recent[index];
-                      return ShotRow(
-                        shot: shot,
-                        beanName: store.beanById(shot.beanId)?.name ?? '-',
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => ShotDetailPage(shotId: shot.id!),
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 188,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: recent.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 10),
+                      itemBuilder: (context, index) {
+                        final shot = recent[index];
+                        return SizedBox(
+                          width: 272,
+                          child: _HomeShotCard(
+                            shot: shot,
+                            beanName: store.beanById(shot.beanId)?.name,
+                            compact: true,
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) =>
+                                    ShotDetailPage(shotId: shot.id!),
+                              ),
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
               const SliverToBoxAdapter(child: SizedBox(height: 24)),
@@ -204,6 +198,197 @@ class HomePage extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+class _HomeShotCard extends StatelessWidget {
+  const _HomeShotCard({
+    required this.shot,
+    required this.onTap,
+    this.beanName,
+    this.onBrewAgain,
+    this.compact = false,
+  });
+
+  final EspressoShot shot;
+  final String? beanName;
+  final VoidCallback onTap;
+  final VoidCallback? onBrewAgain;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = shotColors(context);
+    final notes = shot.tastingNotes?.trim();
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(compact ? 14 : 16),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.035),
+              blurRadius: 12,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.eco_outlined, size: 14, color: colors.textSecondary),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: Text(
+                    beanName ?? 'Unknown bean',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: colors.textSecondary,
+                          fontSize: 11,
+                        ),
+                  ),
+                ),
+                if (shot.rating != null)
+                  StarRating(rating: shot.rating!, size: compact ? 12 : 13),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _ShotValue(
+                  label: 'Dose',
+                  value: '${formatNumber(shot.doseG, fixed: true)}g',
+                ),
+                const SizedBox(width: 12),
+                _ShotValue(
+                  label: 'Yield',
+                  value: '${formatNumber(shot.yieldG, fixed: true)}g',
+                ),
+                const Spacer(),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceAlt,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    formatSpacedRatio(shot.doseG, shot.yieldG),
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: colors.primary,
+                          fontSize: compact ? 12 : 13,
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Icon(
+                  Icons.timer_outlined,
+                  size: 13,
+                  color: colors.textSecondary,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  shot.extractionSec == null ? '-' : '${shot.extractionSec}s',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: colors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    formatHumanDate(shot.brewedAt),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: colors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ),
+                if (onBrewAgain != null)
+                  TextButton.icon(
+                    onPressed: onBrewAgain,
+                    icon: const Icon(Icons.replay_rounded, size: 14),
+                    label: const Text('Brew Again'),
+                    style: TextButton.styleFrom(
+                      minimumSize: const Size(0, 28),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      textStyle:
+                          Theme.of(context).textTheme.labelSmall?.copyWith(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                              ),
+                    ),
+                  ),
+              ],
+            ),
+            if (!compact && notes != null && notes.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Text(
+                notes,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: colors.textSecondary,
+                      fontStyle: FontStyle.italic,
+                    ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ShotValue extends StatelessWidget {
+  const _ShotValue({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = shotColors(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+              ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: colors.textSecondary,
+                fontSize: 10,
+              ),
+        ),
+      ],
+    );
   }
 }
 

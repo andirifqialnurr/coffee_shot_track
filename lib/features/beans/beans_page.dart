@@ -47,9 +47,20 @@ class _BeansPageState extends State<BeansPage> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 18, 20, 10),
-                child: Text(
-                  'Beans',
-                  style: Theme.of(context).textTheme.headlineSmall,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Beans',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                    ),
+                    ShotIconAction(
+                      tooltip: 'Add Bean',
+                      icon: Icons.add_rounded,
+                      onPressed: () => showBeanFormSheet(context),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -143,16 +154,6 @@ class _BeansPageState extends State<BeansPage> {
                 ),
               ),
           ],
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: colors.primary,
-          foregroundColor: colors.onPrimary,
-          icon: const Icon(Icons.add_rounded),
-          label: const Text(
-            'Add Bean',
-            style: TextStyle(fontWeight: FontWeight.w700),
-          ),
-          onPressed: () => showBeanFormSheet(context),
         ),
       );
     });

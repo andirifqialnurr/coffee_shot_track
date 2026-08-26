@@ -97,10 +97,11 @@ class ShotPage extends StatelessWidget {
 }
 
 class SectionLabel extends StatelessWidget {
-  const SectionLabel(this.text, {super.key, this.trailing});
+  const SectionLabel(this.text, {super.key, this.trailing, this.fontSize});
 
   final String text;
   final Widget? trailing;
+  final double? fontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +115,7 @@ class SectionLabel extends StatelessWidget {
             text.toUpperCase(),
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: colors.textSecondary,
+                  fontSize: fontSize,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0,
                 ),

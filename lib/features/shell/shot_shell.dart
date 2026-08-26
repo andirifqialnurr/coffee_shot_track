@@ -29,18 +29,21 @@ class _ShotShellState extends State<ShotShell> {
     setState(() => _index = index);
   }
 
+  void _openNewShot() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const ShotFormPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colors = shotColors(context);
     final pages = [
       HomePage(
-        onNewShot: () => _goToTab(2),
+        onNewShot: _openNewShot,
         onShowHistory: () => _goToTab(3),
         onShowBeans: () => _goToTab(1),
-        onShowInsights: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(builder: (_) => const InsightsPage()),
-          );
-        },
+        onShowInsights: () => _goToTab(2),
         onShowSettings: () {
           Navigator.of(context).push(
             MaterialPageRoute<void>(
@@ -53,15 +56,24 @@ class _ShotShellState extends State<ShotShell> {
         },
       ),
       const BeansPage(),
-      const ShotFormPage(),
+      const InsightsPage(),
       const HistoryPage(),
     ];
 
     return Scaffold(
       body: SafeArea(
-        top: false,
+        bottom: false,
         child: pages[_index],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'global-new-shot',
+        onPressed: _openNewShot,
+        backgroundColor: colors.primary,
+        foregroundColor: colors.onPrimary,
+        icon: const Icon(Icons.add_rounded),
+        label: const Text('New Shot'),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: _ShotBottomNav(
         currentIndex: _index,
         onTap: _goToTab,
@@ -85,7 +97,7 @@ class _ShotBottomNav extends StatelessWidget {
     final items = [
       (Icons.coffee_rounded, 'Home'),
       (Icons.eco_outlined, 'Beans'),
-      (Icons.add_circle_outline_rounded, 'New Shot'),
+      (Icons.query_stats_rounded, 'Stats'),
       (Icons.history_rounded, 'History'),
     ];
 

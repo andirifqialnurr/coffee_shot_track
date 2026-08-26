@@ -37,8 +37,7 @@ class _ShotFormPageState extends State<ShotFormPage> {
   bool _touchedYield = false;
 
   bool get _isEditing => widget.initialShot?.id != null;
-  bool get _isPushedRoute =>
-      widget.initialBeanId != null || widget.initialShot != null;
+  bool get _isPushedRoute => true;
 
   @override
   void initState() {
