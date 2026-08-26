@@ -1,5 +1,6 @@
 import 'package:coffee_shot_track/data/shot_store.dart';
 import 'package:coffee_shot_track/domain/coffee_bean.dart';
+import 'package:coffee_shot_track/domain/coffee_menu.dart';
 import 'package:coffee_shot_track/domain/espresso_shot.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -22,9 +23,20 @@ void main() {
       createdAt: now,
       updatedAt: now,
     );
-    final controller = ShotController.seeded(beans: [bean], shots: [shot]);
+    final menu = CoffeeMenu(
+      id: 1,
+      name: 'Americano',
+      createdAt: now,
+      updatedAt: now,
+    );
+    final controller = ShotController.seeded(
+      beans: [bean],
+      menus: [menu],
+      shots: [shot],
+    );
 
     expect(controller.activeBeans.single.name, 'Rwanda Huye');
+    expect(controller.activeMenus.single.name, 'Americano');
     expect(controller.lastShot, shot);
     expect(controller.totalShots, 1);
     expect(controller.averageRating, 5);

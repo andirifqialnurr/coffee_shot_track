@@ -5,6 +5,7 @@ import '../beans/beans_page.dart';
 import '../history/history_page.dart';
 import '../home/home_page.dart';
 import '../insights/insights_page.dart';
+import '../menus/menus_page.dart';
 import '../settings/settings_page.dart';
 import '../shots/shot_form_page.dart';
 
@@ -43,7 +44,11 @@ class _ShotShellState extends State<ShotShell> {
         onNewShot: _openNewShot,
         onShowHistory: () => _goToTab(3),
         onShowBeans: () => _goToTab(1),
-        onShowInsights: () => _goToTab(2),
+        onShowInsights: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const InsightsPage()),
+          );
+        },
         onShowSettings: () {
           Navigator.of(context).push(
             MaterialPageRoute<void>(
@@ -56,7 +61,7 @@ class _ShotShellState extends State<ShotShell> {
         },
       ),
       const BeansPage(),
-      const InsightsPage(),
+      const MenusPage(),
       const HistoryPage(),
     ];
 
@@ -97,7 +102,7 @@ class _ShotBottomNav extends StatelessWidget {
     final items = [
       (Icons.coffee_rounded, 'Home'),
       (Icons.eco_outlined, 'Beans'),
-      (Icons.query_stats_rounded, 'Stats'),
+      (Icons.local_cafe_outlined, 'Menus'),
       (Icons.history_rounded, 'History'),
     ];
 

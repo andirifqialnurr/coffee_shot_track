@@ -157,6 +157,98 @@ class ShotCard extends StatelessWidget {
   }
 }
 
+class ShotImagePlaceholder extends StatelessWidget {
+  const ShotImagePlaceholder({
+    super.key,
+    required this.label,
+    required this.icon,
+    this.height = 72,
+    this.width = double.infinity,
+    this.radius = 14,
+  });
+
+  final String label;
+  final IconData icon;
+  final double height;
+  final double width;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = shotColors(context);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                colors.surfaceAlt,
+                colors.accent.withValues(alpha: 0.22),
+              ],
+            ),
+          ),
+          child: CustomPaint(
+            painter: _PlaceholderPatternPainter(colors.border),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, color: colors.primary, size: 24),
+                  const SizedBox(height: 5),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: colors.primary,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PlaceholderPatternPainter extends CustomPainter {
+  const _PlaceholderPatternPainter(this.color);
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color.withValues(alpha: 0.35)
+      ..strokeWidth = 1;
+    for (var x = -size.height; x < size.width; x += 18) {
+      canvas.drawLine(
+        Offset(x.toDouble(), size.height),
+        Offset(x + size.height, 0),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PlaceholderPatternPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
 class StarRating extends StatelessWidget {
   const StarRating({
     super.key,

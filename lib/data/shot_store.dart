@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../domain/coffee_bean.dart';
+import '../domain/coffee_menu.dart';
 import '../domain/espresso_shot.dart';
 import '../domain/shot_metrics.dart' as metrics;
 import 'shot_database.dart';
@@ -12,16 +13,19 @@ class ShotController extends GetxController {
         _isLoading = false.obs,
         _errorMessage = RxnString(),
         _beans = <CoffeeBean>[].obs,
+        _menus = <CoffeeMenu>[].obs,
         _shots = <EspressoShot>[].obs;
 
   ShotController.seeded({
     List<CoffeeBean> beans = const [],
+    List<CoffeeMenu> menus = const [],
     List<EspressoShot> shots = const [],
     ShotDatabase? database,
   })  : _database = database ?? ShotDatabase.instance,
         _isLoading = false.obs,
         _errorMessage = RxnString(),
         _beans = beans.toList().obs,
+        _menus = menus.toList().obs,
         _shots = shots.toList().obs;
 
   final ShotDatabase _database;
@@ -29,15 +33,20 @@ class ShotController extends GetxController {
   final RxBool _isLoading;
   final RxnString _errorMessage;
   final RxList<CoffeeBean> _beans;
+  final RxList<CoffeeMenu> _menus;
   final RxList<EspressoShot> _shots;
 
   bool get isLoading => _isLoading.value;
   String? get errorMessage => _errorMessage.value;
   List<CoffeeBean> get beans => List.unmodifiable(_beans);
+  List<CoffeeMenu> get menus => List.unmodifiable(_menus);
   List<EspressoShot> get shots => List.unmodifiable(_shots);
 
   List<CoffeeBean> get activeBeans =>
       _beans.where((bean) => bean.status == BeanStatus.active).toList();
+
+  List<CoffeeMenu> get activeMenus =>
+      _menus.where((menu) => menu.status == MenuStatus.active).toList();
 
   List<EspressoShot> get recentShots => _shots.take(3).toList();
 
@@ -67,8 +76,10 @@ class ShotController extends GetxController {
   Future<void> refresh() async {
     final db = await _database.database;
     final beanRows = await db.query('beans', orderBy: 'updated_at DESC');
+    final menuRows = await db.query('menus', orderBy: 'name COLLATE NOCASE ASC');
     final shotRows = await db.query('shots', orderBy: 'brewed_at DESC');
     _beans.assignAll(beanRows.map(CoffeeBean.fromMap));
+    _menus.assignAll(menuRows.map(CoffeeMenu.fromMap));
     _shots.assignAll(shotRows.map(EspressoShot.fromMap));
   }
 
@@ -76,6 +87,15 @@ class ShotController extends GetxController {
     for (final bean in _beans) {
       if (bean.id == id) {
         return bean;
+      }
+    }
+    return null;
+  }
+
+  CoffeeMenu? menuById(int id) {
+    for (final menu in _menus) {
+      if (menu.id == id) {
+        return menu;
       }
     }
     return null;
@@ -117,6 +137,91 @@ class ShotController extends GetxController {
       final id = await db.insert('beans', bean.toMap());
       await refresh();
       return bean.copyWith(id: id);
+    });
+  }
+
+  Future<CoffeeMenu> addMenu({
+    required String name,
+    String? category,
+    String? description,
+    String? notes,
+    String? imagePath,
+  }) async {
+    final now = DateTime.now();
+    final menu = CoffeeMenu(
+      name: name.trim(),
+      category: _blankToNull(category),
+      description: _blankToNull(description),
+      notes: _blankToNull(notes),
+      imagePath: _blankToNull(imagePath),
+      createdAt: now,
+      updatedAt: now,
+    );
+
+    return _runMutation(() async {
+      _validateMenu(menu);
+      final db = await _database.database;
+      final id = await db.insert('menus', menu.toMap());
+      await refresh();
+      return menu.copyWith(id: id);
+    });
+  }
+
+  Future<void> saveMenu(CoffeeMenu menu) async {
+    final id = menu.id;
+    if (id == null) {
+      throw ArgumentError('Menu id is required for update.');
+    }
+
+    await _runMutation(() async {
+      _validateMenu(menu);
+      final db = await _database.database;
+      await db.update(
+        'menus',
+        menu.copyWith(updatedAt: DateTime.now()).toMap(),
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      await refresh();
+    });
+  }
+
+  Future<void> archiveMenu(CoffeeMenu menu) {
+    return saveMenu(menu.copyWith(status: MenuStatus.archived));
+  }
+
+  Future<void> deleteMenuOrArchive(CoffeeMenu menu) async {
+    final id = menu.id;
+    if (id == null) {
+      return;
+    }
+
+    await _runMutation(() async {
+      final db = await _database.database;
+      if (await _tableExists(db, 'orders')) {
+        final count = Sqflite.firstIntValue(
+              await db.rawQuery(
+                'SELECT COUNT(*) FROM orders WHERE menu_id = ?',
+                [id],
+              ),
+            ) ??
+            0;
+        if (count > 0) {
+          await db.update(
+            'menus',
+            menu
+                .copyWith(status: MenuStatus.archived, updatedAt: DateTime.now())
+                .toMap(),
+            where: 'id = ?',
+            whereArgs: [id],
+          );
+          await refresh();
+          return;
+        }
+      }
+
+      await db.delete('menus', where: 'id = ?', whereArgs: [id]);
+      await refresh();
     });
   }
 
@@ -271,4 +376,18 @@ void _validateBean(CoffeeBean bean) {
   if (bean.name.trim().isEmpty) {
     throw ArgumentError('Bean name is required.');
   }
+}
+
+void _validateMenu(CoffeeMenu menu) {
+  if (menu.name.trim().isEmpty) {
+    throw ArgumentError('Menu name is required.');
+  }
+}
+
+Future<bool> _tableExists(Database db, String tableName) async {
+  final rows = await db.rawQuery(
+    "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?",
+    [tableName],
+  );
+  return rows.isNotEmpty;
 }

@@ -26,16 +26,16 @@ Keep the existing warm espresso design system. Do not turn the UI into a generic
 - [x] Align `See all` with the section label and route it to History.
 - [x] Remove the duplicate `Recent Shots` section.
 - [x] Run `flutter analyze` and `flutter test --concurrency=1`.
-- [ ] Commit and push Home cleanup.
+- [x] Commit and push Home cleanup.
 
 ### Batch 12.3 - Menu Master Data
 
-- [ ] Add `CoffeeMenu` domain model.
-- [ ] Add `menus` SQLite table and seed starter menus.
-- [ ] Add menu CRUD/archive behavior in the store/controller.
-- [ ] Build Menus tab using the existing warm espresso card style.
-- [ ] Add menu image path support and default placeholder.
-- [ ] Run focused persistence and widget tests.
+- [x] Add `CoffeeMenu` domain model.
+- [x] Add `menus` SQLite table and seed starter menus.
+- [x] Add menu CRUD/archive behavior in the store/controller.
+- [x] Build Menus tab using the existing warm espresso card style.
+- [x] Add menu image path support and default placeholder.
+- [x] Run focused persistence and widget tests.
 - [ ] Commit and push Menu master data.
 
 ### Batch 12.4 - Cafe Master Data

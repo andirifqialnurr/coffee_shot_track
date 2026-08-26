@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:coffee_shot_track/data/shot_database.dart';
 import 'package:coffee_shot_track/data/shot_store.dart';
 import 'package:coffee_shot_track/domain/coffee_bean.dart';
+import 'package:coffee_shot_track/domain/coffee_menu.dart';
 import 'package:coffee_shot_track/domain/espresso_shot.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -21,7 +22,7 @@ void main() {
       () => databaseFactoryFfi.openDatabase(
         dbPath,
         options: OpenDatabaseOptions(
-          version: 1,
+          version: ShotDatabase.version,
           onCreate: (db, version) => ShotDatabase.createSchema(db),
         ),
       ),
@@ -109,6 +110,33 @@ void main() {
     await expectLater(
       store.addShot(_shot(beanId: bean.id!, dose: 18, yieldOut: -1)),
       throwsA(isA<ArgumentError>()),
+    );
+  });
+
+  test('default and custom menus persist locally', () async {
+    final firstSession = ShotController(database: database);
+    await firstSession.load();
+
+    expect(firstSession.menus.map((menu) => menu.name), contains('Americano'));
+
+    final custom = await firstSession.addMenu(
+      name: 'Iced Long Black',
+      category: 'Espresso-based',
+      description: 'Espresso over cold water and ice',
+    );
+
+    final secondSession = ShotController(database: database);
+    await secondSession.load();
+
+    expect(
+      secondSession.menus.map((menu) => menu.name),
+      contains('Iced Long Black'),
+    );
+
+    await secondSession.archiveMenu(custom);
+    expect(
+      secondSession.menuById(custom.id!)?.status,
+      MenuStatus.archived,
     );
   });
 }
