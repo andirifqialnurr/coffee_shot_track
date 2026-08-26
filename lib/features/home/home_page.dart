@@ -352,7 +352,7 @@ class _HomeShortcutGrid extends StatelessWidget {
             for (final item in items)
               SizedBox(
                 width: tileWidth,
-                height: 58,
+                height: tileWidth,
                 child: _HomeShortcutTile(item: item),
               ),
           ],

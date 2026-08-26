@@ -107,6 +107,12 @@ Keep the existing warm espresso design system. Do not turn the UI into a generic
 - [x] Run `flutter analyze` and `flutter test --concurrency=1`.
 - [ ] Commit and push compact Home shortcut grid.
 
+### Batch 12.11 - Square Home Shortcut Tiles
+
+- [x] Make Home shortcut tiles square by matching tile height to column width.
+- [x] Run `flutter analyze` and `flutter test --concurrency=1`.
+- [ ] Commit and push square Home shortcut tiles.
+
 ## Task 1 - Cookbook Foundation
 
 - [x] Create `cookbook/PRD.md`.
