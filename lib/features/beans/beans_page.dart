@@ -179,7 +179,7 @@ class _BeanRow extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(16),
@@ -191,9 +191,9 @@ class _BeanRow extends StatelessWidget {
               label: bean.name,
               icon: Icons.eco_rounded,
               imagePath: bean.imagePath,
-              width: 44,
-              height: 44,
-              radius: 12,
+              width: 54,
+              height: 54,
+              radius: 13,
             ),
             const SizedBox(width: 12),
             Expanded(

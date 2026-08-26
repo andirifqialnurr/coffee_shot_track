@@ -337,16 +337,22 @@ class _HomeSummaryCard extends StatelessWidget {
 class _HomeShortcutGrid extends StatelessWidget {
   const _HomeShortcutGrid({required this.items});
 
+  static const _columnCount = 5;
+
   final List<_HomeShortcutItem> items;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final tileSize = constraints.maxWidth < 300 ? 52.0 : 56.0;
+        final tileSize = (constraints.maxWidth / _columnCount)
+            .clamp(0.0, 64.0)
+            .toDouble();
         final rows = <List<_HomeShortcutItem>>[];
-        for (var index = 0; index < items.length; index += 4) {
-          final end = (index + 4) > items.length ? items.length : index + 4;
+        for (var index = 0; index < items.length; index += _columnCount) {
+          final end = (index + _columnCount) > items.length
+              ? items.length
+              : index + _columnCount;
           rows.add(items.sublist(index, end));
         }
 
@@ -356,10 +362,10 @@ class _HomeShortcutGrid extends StatelessWidget {
               if (rowIndex > 0) const SizedBox(height: 10),
               Row(
                 children: [
-                  for (var column = 0; column < 4; column++)
+                  for (var column = 0; column < _columnCount; column++)
                     Expanded(
                       child: Align(
-                        alignment: Alignment.center,
+                        alignment: Alignment.centerLeft,
                         child: column < rows[rowIndex].length
                             ? SizedBox.square(
                                 dimension: tileSize,
@@ -393,7 +399,7 @@ class _HomeShortcutTile extends StatelessWidget {
       onTap: item.onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(12),
@@ -410,10 +416,10 @@ class _HomeShortcutTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: colors.textPrimary,
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w800,
-                  ),
+                color: colors.textPrimary,
+                fontSize: 9.5,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ],
         ),
