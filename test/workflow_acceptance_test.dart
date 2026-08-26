@@ -65,10 +65,16 @@ void main() {
     expect(find.text('Home Bar - Kenya Nyeri'), findsOneWidget);
     expect(find.text('Roastery Lab - Brazil Cerrado'), findsOneWidget);
 
-    await tester.tap(find.text('Semua Menu'));
+    await tester.tap(find.byTooltip('Filter History'));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find
+          .ancestor(of: find.text('Piccolo'), matching: find.byType(InkWell))
+          .last,
+    );
     await tester.pump();
-    await tester.tap(find.text('Piccolo').first);
-    await tester.pump();
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Apply'));
+    await tester.pumpAndSettle();
 
     expect(find.text('Home Bar - Kenya Nyeri'), findsNothing);
     expect(find.text('Roastery Lab - Brazil Cerrado'), findsOneWidget);

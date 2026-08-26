@@ -27,6 +27,7 @@ class _HistoryPageState extends State<HistoryPage> {
     return Obx(() {
       final colors = shotColors(context);
       final filtered = store.orders.where(_matchesFilter).toList();
+      final hasActiveFilters = _hasActiveFilters;
 
       return Scaffold(
         backgroundColor: colors.background,
@@ -44,142 +45,18 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                     ),
                     ShotIconAction(
-                      tooltip: 'Date filter',
-                      icon: Icons.calendar_today_outlined,
-                      onPressed: () => _pickDate(context),
+                      tooltip: 'Filter History',
+                      icon: Icons.tune_rounded,
+                      selected: hasActiveFilters,
+                      onPressed: () => _showFilterSheet(context, store),
                     ),
-                    ShotIconAction(
-                      tooltip: 'Clear filters',
-                      icon: Icons.filter_alt_off_outlined,
-                      onPressed: () => setState(() {
-                        _menuId = null;
-                        _cafeId = null;
-                        _beanId = null;
-                        _rating = null;
-                        _date = null;
-                      }),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 40,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  children: [
-                    FilterPill(
-                      label: 'Semua Menu',
-                      selected: _menuId == null,
-                      onTap: () => setState(() => _menuId = null),
-                    ),
-                    const SizedBox(width: 8),
-                    for (final menu in store.menus)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: FilterPill(
-                          label: menu.name,
-                          selected: _menuId == menu.id,
-                          onTap: () => setState(() => _menuId = menu.id),
-                        ),
+                    if (hasActiveFilters)
+                      ShotIconAction(
+                        tooltip: 'Clear filters',
+                        icon: Icons.filter_alt_off_outlined,
+                        onPressed: _clearFilters,
                       ),
                   ],
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 4),
-                child: SizedBox(
-                  height: 36,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      FilterPill(
-                        label: 'Semua Cafe',
-                        selected: _cafeId == null,
-                        onTap: () => setState(() => _cafeId = null),
-                      ),
-                      const SizedBox(width: 8),
-                      for (final cafe in store.cafes)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: FilterPill(
-                            label: cafe.name,
-                            selected: _cafeId == cafe.id,
-                            onTap: () => setState(() => _cafeId = cafe.id),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
-                child: SizedBox(
-                  height: 36,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      FilterPill(
-                        label: 'Semua Bean',
-                        selected: _beanId == null,
-                        onTap: () => setState(() => _beanId = null),
-                      ),
-                      const SizedBox(width: 8),
-                      for (final bean in store.beans)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: FilterPill(
-                            label: bean.name,
-                            selected: _beanId == bean.id,
-                            onTap: () => setState(() => _beanId = bean.id),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
-                child: SizedBox(
-                  height: 36,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      FilterPill(
-                        label: 'Semua Rating',
-                        selected: _rating == null,
-                        onTap: () => setState(() => _rating = null),
-                      ),
-                      const SizedBox(width: 8),
-                      for (var rating = 5; rating >= 1; rating--)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: FilterPill(
-                            label: '$rating star',
-                            selected: _rating == rating,
-                            onTap: () => setState(() => _rating = rating),
-                          ),
-                        ),
-                      if (_date != null)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 2),
-                          child: FilterPill(
-                            label: formatShortDate(_date!),
-                            selected: true,
-                            icon: Icons.calendar_today_outlined,
-                            onTap: () => setState(() => _date = null),
-                          ),
-                        ),
-                    ],
-                  ),
                 ),
               ),
             ),
@@ -242,16 +119,54 @@ class _HistoryPageState extends State<HistoryPage> {
     });
   }
 
-  Future<void> _pickDate(BuildContext context) async {
-    final picked = await showDatePicker(
+  bool get _hasActiveFilters {
+    return _menuId != null ||
+        _cafeId != null ||
+        _beanId != null ||
+        _rating != null ||
+        _date != null;
+  }
+
+  void _clearFilters() {
+    setState(() {
+      _menuId = null;
+      _cafeId = null;
+      _beanId = null;
+      _rating = null;
+      _date = null;
+    });
+  }
+
+  Future<void> _showFilterSheet(
+    BuildContext context,
+    ShotController store,
+  ) async {
+    final result = await showModalBottomSheet<_HistoryFilterValue>(
       context: context,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now().add(const Duration(days: 1)),
-      initialDate: _date ?? DateTime.now(),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _HistoryFilterSheet(
+        store: store,
+        initial: _HistoryFilterValue(
+          menuId: _menuId,
+          cafeId: _cafeId,
+          beanId: _beanId,
+          rating: _rating,
+          date: _date,
+        ),
+      ),
     );
-    if (picked != null) {
-      setState(() => _date = picked);
+    if (result == null) {
+      return;
     }
+
+    setState(() {
+      _menuId = result.menuId;
+      _cafeId = result.cafeId;
+      _beanId = result.beanId;
+      _rating = result.rating;
+      _date = result.date;
+    });
   }
 
   bool _matchesFilter(CoffeeOrder order) {
@@ -274,6 +189,283 @@ class _HistoryPageState extends State<HistoryPage> {
       return false;
     }
     return true;
+  }
+}
+
+class _HistoryFilterValue {
+  const _HistoryFilterValue({
+    this.menuId,
+    this.cafeId,
+    this.beanId,
+    this.rating,
+    this.date,
+  });
+
+  final int? menuId;
+  final int? cafeId;
+  final int? beanId;
+  final int? rating;
+  final DateTime? date;
+}
+
+class _HistoryFilterSheet extends StatefulWidget {
+  const _HistoryFilterSheet({
+    required this.store,
+    required this.initial,
+  });
+
+  final ShotController store;
+  final _HistoryFilterValue initial;
+
+  @override
+  State<_HistoryFilterSheet> createState() => _HistoryFilterSheetState();
+}
+
+class _HistoryFilterSheetState extends State<_HistoryFilterSheet> {
+  late int? _menuId = widget.initial.menuId;
+  late int? _cafeId = widget.initial.cafeId;
+  late int? _beanId = widget.initial.beanId;
+  late int? _rating = widget.initial.rating;
+  late DateTime? _date = widget.initial.date;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = shotColors(context);
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final maxHeight = MediaQuery.sizeOf(context).height * 0.84;
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: maxHeight),
+          child: Material(
+            color: colors.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+              decoration: BoxDecoration(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(24)),
+                border: Border(top: BorderSide(color: colors.border)),
+              ),
+              child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Filters',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                    ShotIconAction(
+                      tooltip: 'Close filters',
+                      icon: Icons.close_rounded,
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _FilterGroup(
+                          label: 'Menu',
+                          child: _FilterWrap(
+                            children: [
+                              FilterPill(
+                                label: 'All Menus',
+                                selected: _menuId == null,
+                                onTap: () => setState(() => _menuId = null),
+                              ),
+                              for (final menu in widget.store.menus)
+                                FilterPill(
+                                  label: menu.name,
+                                  selected: _menuId == menu.id,
+                                  onTap: () => setState(() => _menuId = menu.id),
+                                ),
+                            ],
+                          ),
+                        ),
+                        _FilterGroup(
+                          label: 'Cafe',
+                          child: _FilterWrap(
+                            children: [
+                              FilterPill(
+                                label: 'All Cafes',
+                                selected: _cafeId == null,
+                                onTap: () => setState(() => _cafeId = null),
+                              ),
+                              for (final cafe in widget.store.cafes)
+                                FilterPill(
+                                  label: cafe.name,
+                                  selected: _cafeId == cafe.id,
+                                  onTap: () => setState(() => _cafeId = cafe.id),
+                                ),
+                            ],
+                          ),
+                        ),
+                        _FilterGroup(
+                          label: 'Bean',
+                          child: _FilterWrap(
+                            children: [
+                              FilterPill(
+                                label: 'All Beans',
+                                selected: _beanId == null,
+                                onTap: () => setState(() => _beanId = null),
+                              ),
+                              for (final bean in widget.store.beans)
+                                FilterPill(
+                                  label: bean.name,
+                                  selected: _beanId == bean.id,
+                                  onTap: () => setState(() => _beanId = bean.id),
+                                ),
+                            ],
+                          ),
+                        ),
+                        _FilterGroup(
+                          label: 'Rating',
+                          child: _FilterWrap(
+                            children: [
+                              FilterPill(
+                                label: 'All Ratings',
+                                selected: _rating == null,
+                                onTap: () => setState(() => _rating = null),
+                              ),
+                              for (var rating = 5; rating >= 1; rating--)
+                                FilterPill(
+                                  label: '$rating star',
+                                  selected: _rating == rating,
+                                  onTap: () =>
+                                      setState(() => _rating = rating),
+                                ),
+                            ],
+                          ),
+                        ),
+                        _FilterGroup(
+                          label: 'Date',
+                          child: _FilterWrap(
+                            children: [
+                              FilterPill(
+                                label: _date == null
+                                    ? 'Any Date'
+                                    : formatShortDate(_date!),
+                                selected: _date != null,
+                                icon: Icons.calendar_today_outlined,
+                                onTap: _pickDate,
+                              ),
+                              if (_date != null)
+                                FilterPill(
+                                  label: 'Clear Date',
+                                  selected: false,
+                                  icon: Icons.close_rounded,
+                                  onTap: () => setState(() => _date = null),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SecondaryButton(
+                        label: 'Clear',
+                        icon: Icons.filter_alt_off_outlined,
+                        onPressed: () => setState(() {
+                          _menuId = null;
+                          _cafeId = null;
+                          _beanId = null;
+                          _rating = null;
+                          _date = null;
+                        }),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: PrimaryButton(
+                        label: 'Apply',
+                        icon: Icons.check_rounded,
+                        onPressed: () => Navigator.of(context).pop(
+                          _HistoryFilterValue(
+                            menuId: _menuId,
+                            cafeId: _cafeId,
+                            beanId: _beanId,
+                            rating: _rating,
+                            date: _date,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now().add(const Duration(days: 1)),
+      initialDate: _date ?? DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() => _date = picked);
+    }
+  }
+}
+
+class _FilterGroup extends StatelessWidget {
+  const _FilterGroup({
+    required this.label,
+    required this.child,
+  });
+
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionLabel(label, fontSize: 12),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterWrap extends StatelessWidget {
+  const _FilterWrap({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: children,
+    );
   }
 }
 

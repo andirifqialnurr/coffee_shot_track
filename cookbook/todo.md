@@ -120,6 +120,14 @@ Keep the existing warm espresso design system. Do not turn the UI into a generic
 - [x] Run `flutter analyze` and `flutter test --concurrency=1`.
 - [ ] Commit and push fixed Home shortcut sizing.
 
+### Batch 12.13 - History Filter Modal
+
+- [x] Move History filters out of the main page and into a filter modal.
+- [x] Keep the History header compact with a filter icon trigger.
+- [x] Keep menu, cafe, bean, rating, and date filters available in the modal.
+- [x] Run `flutter analyze` and `flutter test --concurrency=1`.
+- [ ] Commit and push History filter modal.
+
 ## Task 1 - Cookbook Foundation
 
 - [x] Create `cookbook/PRD.md`.
