@@ -1,7 +1,9 @@
 import 'package:coffee_shot_track/app/shot_theme.dart';
 import 'package:coffee_shot_track/data/shot_store.dart';
+import 'package:coffee_shot_track/domain/cafe.dart';
 import 'package:coffee_shot_track/domain/coffee_bean.dart';
-import 'package:coffee_shot_track/domain/espresso_shot.dart';
+import 'package:coffee_shot_track/domain/coffee_menu.dart';
+import 'package:coffee_shot_track/domain/coffee_order.dart';
 import 'package:coffee_shot_track/features/history/history_page.dart';
 import 'package:coffee_shot_track/features/shots/shot_form_page.dart';
 import 'package:flutter/material.dart';
@@ -37,31 +39,39 @@ void main() {
     expect(find.text('1 : 2.00'), findsOneWidget);
   });
 
-  testWidgets('history filters shots by bean', (tester) async {
+  testWidgets('history filters orders by menu', (tester) async {
     final controller = ShotController.seeded(
       beans: [
         _bean(id: 1, name: 'Kenya Nyeri'),
         _bean(id: 2, name: 'Brazil Cerrado'),
       ],
-      shots: [
-        _shot(id: 1, beanId: 1, dose: 18, yieldOut: 36, rating: 4),
-        _shot(id: 2, beanId: 2, dose: 19, yieldOut: 38, rating: 5),
+      menus: [
+        _menu(id: 1, name: 'Iced Americano'),
+        _menu(id: 2, name: 'Piccolo'),
+      ],
+      cafes: [
+        _cafe(id: 1, name: 'Home Bar'),
+        _cafe(id: 2, name: 'Roastery Lab'),
+      ],
+      orders: [
+        _order(id: 1, menuId: 1, cafeId: 1, beanId: 1, rating: 4),
+        _order(id: 2, menuId: 2, cafeId: 2, beanId: 2, rating: 5),
       ],
     );
 
     await tester.pumpWidget(_wrap(controller, const HistoryPage()));
     await tester.pump();
 
-    expect(find.text('18.0g -> 36.0g * 28s'), findsOneWidget);
-    expect(find.text('19.0g -> 38.0g * 28s'), findsOneWidget);
+    expect(find.text('Home Bar - Kenya Nyeri'), findsOneWidget);
+    expect(find.text('Roastery Lab - Brazil Cerrado'), findsOneWidget);
 
-    await tester.tap(find.text('Semua Bean'));
+    await tester.tap(find.text('Semua Menu'));
     await tester.pump();
-    await tester.tap(find.text('Brazil Cerrado').first);
+    await tester.tap(find.text('Piccolo').first);
     await tester.pump();
 
-    expect(find.text('18.0g -> 36.0g * 28s'), findsNothing);
-    expect(find.text('19.0g -> 38.0g * 28s'), findsOneWidget);
+    expect(find.text('Home Bar - Kenya Nyeri'), findsNothing);
+    expect(find.text('Roastery Lab - Brazil Cerrado'), findsOneWidget);
   });
 }
 
@@ -91,22 +101,41 @@ CoffeeBean _bean({required int id, required String name}) {
   );
 }
 
-EspressoShot _shot({
+CoffeeMenu _menu({required int id, required String name}) {
+  final now = DateTime(2026, 8, 25, 10);
+  return CoffeeMenu(
+    id: id,
+    name: name,
+    createdAt: now,
+    updatedAt: now,
+  );
+}
+
+Cafe _cafe({required int id, required String name}) {
+  final now = DateTime(2026, 8, 25, 10);
+  return Cafe(
+    id: id,
+    name: name,
+    createdAt: now,
+    updatedAt: now,
+  );
+}
+
+CoffeeOrder _order({
   required int id,
-  required int beanId,
-  required double dose,
-  required double yieldOut,
+  required int menuId,
+  required int cafeId,
+  int? beanId,
   int? rating,
 }) {
   final now = DateTime(2026, 8, 25, 10).add(Duration(minutes: id));
-  return EspressoShot(
+  return CoffeeOrder(
     id: id,
+    menuId: menuId,
+    cafeId: cafeId,
     beanId: beanId,
-    doseG: dose,
-    yieldG: yieldOut,
-    extractionSec: 28,
     rating: rating,
-    brewedAt: now,
+    orderedAt: now,
     createdAt: now,
     updatedAt: now,
   );

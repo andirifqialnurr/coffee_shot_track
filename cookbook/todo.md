@@ -73,11 +73,11 @@ Keep the existing warm espresso design system. Do not turn the UI into a generic
 
 ### Batch 12.7 - History and Stats Reframe
 
-- [ ] Update History filters to menu, cafe, optional bean, rating, and date.
-- [ ] Update History rows/cards to show menu/cafe-first order context.
-- [ ] Update Stats to total orders, average rating, most-ordered menu, most-visited cafe, and trend chart.
-- [ ] Remove duplicate espresso-only metrics from primary UI.
-- [ ] Run full sequential validation.
+- [x] Update History filters to menu, cafe, optional bean, rating, and date.
+- [x] Update History rows/cards to show menu/cafe-first order context.
+- [x] Update Stats to total orders, average rating, most-ordered menu, most-visited cafe, and trend chart.
+- [x] Remove duplicate espresso-only metrics from primary UI.
+- [x] Run full sequential validation.
 - [ ] Commit and push final reframe.
 
 ## Task 1 - Cookbook Foundation
