@@ -83,7 +83,7 @@ class _ShotShellState extends State<ShotShell> {
         foregroundColor: colors.onPrimary,
         child: const Icon(Icons.add_rounded),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: _ShotBottomNav(
         currentIndex: _index,
         onTap: _goToTab,
@@ -130,52 +130,70 @@ class _ShotBottomNav extends StatelessWidget {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(items.length, (index) {
-            final selected = index == currentIndex;
-            final (icon, label) = items[index];
-            return Expanded(
-              child: Tooltip(
-                message: label,
-                child: InkWell(
+          children: [
+            for (var index = 0; index < items.length; index++) ...[
+              if (index == 2) const SizedBox(width: 58),
+              Expanded(
+                child: _ShotBottomNavItem(
+                  icon: items[index].$1,
+                  label: items[index].$2,
+                  selected: index == currentIndex,
                   onTap: () => onTap(index),
-                  borderRadius: BorderRadius.circular(16),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 4,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          icon,
-                          color: selected
-                              ? colors.primary
-                              : colors.textSecondary,
-                          size: 23,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: selected
-                                        ? colors.primary
-                                        : colors.textSecondary,
-                                    fontWeight: selected
-                                        ? FontWeight.w700
-                                        : FontWeight.w500,
-                                  ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ),
-            );
-          }),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ShotBottomNavItem extends StatelessWidget {
+  const _ShotBottomNavItem({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = shotColors(context);
+
+    return Tooltip(
+      message: label,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: selected ? colors.primary : colors.textSecondary,
+                size: 23,
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: selected ? colors.primary : colors.textSecondary,
+                      fontWeight:
+                          selected ? FontWeight.w700 : FontWeight.w500,
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
     );

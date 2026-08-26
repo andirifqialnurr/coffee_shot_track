@@ -33,6 +33,8 @@ class HomePage extends StatelessWidget {
       }
 
       final lastOrders = store.recentOrders.take(2).toList();
+      final thisMonthOrders = _ordersThisMonth(store.orders);
+      final topMenu = _topMenu(store);
 
       return ShotPageFrame(
         child: CustomScrollView(
@@ -73,8 +75,28 @@ class HomePage extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 2),
+                child: _HomeSummaryStrip(
+                  items: [
+                    _HomeSummaryItem(
+                      label: 'This Month',
+                      value: '$thisMonthOrders',
+                      icon: Icons.calendar_month_outlined,
+                    ),
+                    _HomeSummaryItem(
+                      label: 'Top Menu',
+                      value: topMenu?.label ?? '-',
+                      sub: topMenu == null ? null : '${topMenu.count} orders',
+                      icon: Icons.local_cafe_outlined,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: SectionLabel('Master Data', fontSize: 14),
+                child: SectionLabel('More Menus', fontSize: 12),
               ),
             ),
             SliverToBoxAdapter(
@@ -101,7 +123,7 @@ class HomePage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SectionLabel(
                   'Last Orders',
-                  fontSize: 14,
+                  fontSize: 12,
                   trailing: TextButton(
                     onPressed: onShowHistory,
                     style: TextButton.styleFrom(
@@ -197,6 +219,121 @@ class _HomeShortcutItem {
   final VoidCallback onTap;
 }
 
+class _HomeSummaryItem {
+  const _HomeSummaryItem({
+    required this.label,
+    required this.value,
+    required this.icon,
+    this.sub,
+  });
+
+  final String label;
+  final String value;
+  final String? sub;
+  final IconData icon;
+}
+
+class _CountedLabel {
+  const _CountedLabel({required this.label, required this.count});
+
+  final String label;
+  final int count;
+}
+
+class _HomeSummaryStrip extends StatelessWidget {
+  const _HomeSummaryStrip({required this.items});
+
+  final List<_HomeSummaryItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        for (var i = 0; i < items.length; i++) ...[
+          if (i > 0) const SizedBox(width: 8),
+          Expanded(child: _HomeSummaryCard(item: items[i])),
+        ],
+      ],
+    );
+  }
+}
+
+class _HomeSummaryCard extends StatelessWidget {
+  const _HomeSummaryCard({required this.item});
+
+  final _HomeSummaryItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = shotColors(context);
+
+    return Container(
+      constraints: const BoxConstraints(minHeight: 74),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: colors.border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: colors.surfaceAlt,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(item.icon, size: 19, color: colors.primary),
+          ),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: colors.textSecondary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  item.value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+                if (item.sub != null) ...[
+                  const SizedBox(height: 1),
+                  Text(
+                    item.sub!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: colors.textSecondary,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _HomeShortcutGrid extends StatelessWidget {
   const _HomeShortcutGrid({required this.items});
 
@@ -231,7 +368,7 @@ class _HomeShortcutTile extends StatelessWidget {
       onTap: item.onTap,
       borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(14),
@@ -410,6 +547,41 @@ class _HomeOrderCard extends StatelessWidget {
       ),
     );
   }
+}
+
+int _ordersThisMonth(List<CoffeeOrder> orders) {
+  final now = DateTime.now();
+  return orders
+      .where(
+        (order) =>
+            order.orderedAt.year == now.year && order.orderedAt.month == now.month,
+      )
+      .length;
+}
+
+_CountedLabel? _topMenu(ShotController store) {
+  final counts = <int, int>{};
+  for (final order in store.orders) {
+    counts.update(order.menuId, (value) => value + 1, ifAbsent: () => 1);
+  }
+  if (counts.isEmpty) {
+    return null;
+  }
+
+  final entries = counts.entries.toList()
+    ..sort((a, b) {
+      final byCount = b.value.compareTo(a.value);
+      if (byCount != 0) {
+        return byCount;
+      }
+      return (store.menuById(a.key)?.name ?? '')
+          .compareTo(store.menuById(b.key)?.name ?? '');
+    });
+  final top = entries.first;
+  return _CountedLabel(
+    label: store.menuById(top.key)?.name ?? 'Unknown menu',
+    count: top.value,
+  );
 }
 
 String greetingLabel() {

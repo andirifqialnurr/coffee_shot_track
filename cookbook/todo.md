@@ -89,6 +89,16 @@ Keep the existing warm espresso design system. Do not turn the UI into a generic
 - [x] Run `flutter analyze` and `flutter test --concurrency=1`.
 - [ ] Commit and push Home shortcut cleanup.
 
+### Batch 12.9 - Home Summary and Center Add Button
+
+- [x] Move the global add button to the center of the floating bottom navigation.
+- [x] Reduce Home section labels to 12px.
+- [x] Rename `Master Data` to `More Menus`.
+- [x] Tighten Home shortcut tile padding to 6px.
+- [x] Add a compact Home summary for this month's orders and top menu.
+- [x] Run `flutter analyze` and `flutter test --concurrency=1`.
+- [ ] Commit and push Home summary cleanup.
+
 ## Task 1 - Cookbook Foundation
 
 - [x] Create `cookbook/PRD.md`.
